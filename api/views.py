@@ -56,6 +56,7 @@ def update_jumlah_ayam(request, pk):
         DataAyamHistory.objects.create(
             data_ayam=data_ayam,
             jumlah_ayam_awal=data_ayam.jumlah_ayam_awal,
+            tanggal_mulai=data_ayam.tanggal_mulai,
             tanggal_panen=data_ayam.tanggal_panen,
             jumlah_ayam=data_ayam.jumlah_ayam,
             mortalitas=data_ayam.mortalitas,

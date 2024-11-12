@@ -11,7 +11,7 @@ class ParameterSerializer(serializers.ModelSerializer):
 class DataAyamSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataAyam
-        fields = ['id', 'timestamp', 'jumlah_ayam_awal', 'tanggal_panen', 'jumlah_ayam', 'mortalitas', 'usia_ayam']
+        fields = ['id', 'timestamp', 'tanggal_mulai', 'jumlah_ayam_awal', 'tanggal_panen', 'jumlah_ayam', 'mortalitas', 'usia_ayam']
         
 class StartFarmingSerializer(serializers.ModelSerializer):
     class Meta:
