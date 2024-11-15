@@ -6,7 +6,7 @@ from .models import StartFarming
 class ParameterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Parameter
-        fields = ['id', 'timestamp', 'ammonia', 'temperature', 'humidity']
+        fields = ['id', 'timestamp', 'ammonia', 'temperature', 'humidity', 'score']
         
 class DataAyamSerializer(serializers.ModelSerializer):
     class Meta:
