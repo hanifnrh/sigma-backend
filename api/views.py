@@ -10,8 +10,7 @@ from rest_framework.decorators import api_view
 from .models import DataAyam, DataAyamHistory
 from .serializers import DataAyamSerializer
 from rest_framework import status
-from .models import StartFarming
-from .serializers import StartFarmingSerializer
+from .serializers import DataAyamHistorySerializer
 
 # List and Create Parameter
 class ParameterListCreate(generics.ListCreateAPIView):
@@ -32,45 +31,51 @@ class DataAyamListCreate(generics.ListCreateAPIView):
 class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = DataAyam.objects.all()
     serializer_class = DataAyamSerializer
-    
-    def delete(self, request, *args, **kwargs):
+
+    def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.delete()  # Perform the deletion
-        return Response(status=status.HTTP_204_NO_CONTENT) 
-    
-class StartFarmingListCreate(generics.ListCreateAPIView):
-    queryset = StartFarming.objects.all()
-    serializer_class = StartFarmingSerializer
-    
-class StartFarmingDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = StartFarming.objects.all()
-    serializer_class = StartFarmingSerializer
-    
-@api_view(['PATCH'])
-def update_jumlah_ayam(request, pk):
-    try:
-        # Ambil data ayam yang ada
-        data_ayam = DataAyam.objects.get(pk=pk)
+        original_data = {
+            "jumlah_ayam": instance.jumlah_ayam,
+            "mortalitas": instance.mortalitas,
+            "usia_ayam": instance.usia_ayam,
+        }
 
-        # Simpan riwayat data ayam yang lama ke DataAyamHistory
-        DataAyamHistory.objects.create(
-            data_ayam=data_ayam,
-            jumlah_ayam_awal=data_ayam.jumlah_ayam_awal,
-            tanggal_mulai=data_ayam.tanggal_mulai,
-            tanggal_panen=data_ayam.tanggal_panen,
-            jumlah_ayam=data_ayam.jumlah_ayam,
-            mortalitas=data_ayam.mortalitas,
-            usia_ayam=data_ayam.usia_ayam,
-        )
+        # Update instance with validated data
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
 
-        # Update data ayam dengan data yang baru
-        for key, value in request.data.items():
-            setattr(data_ayam, key, value)
-        data_ayam.save()
+        # Simpan riwayat jika field tertentu berubah
+        updated_data = serializer.validated_data
+        if any(
+            original_data[key] != updated_data.get(key, original_data[key])
+            for key in ["jumlah_ayam", "mortalitas", "usia_ayam"]
+        ):
+            DataAyamHistory.objects.create(
+                data_ayam=instance,
+                jumlah_ayam_awal=instance.jumlah_ayam_awal,
+                tanggal_mulai=instance.tanggal_mulai,
+                tanggal_panen=instance.tanggal_panen,
+                jumlah_ayam=updated_data.get("jumlah_ayam", instance.jumlah_ayam),
+                mortalitas=updated_data.get("mortalitas", instance.mortalitas),
+                usia_ayam=updated_data.get("usia_ayam", instance.usia_ayam),
+            )
 
-        # Kirimkan response setelah data diperbarui
-        serializer = DataAyamSerializer(data_ayam)
+        # Simpan perubahan
+        self.perform_update(serializer)
+
         return Response(serializer.data)
 
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+@api_view(['GET'])
+def get_data_ayam_history(request, pk):
+    try:
+        data_ayam = DataAyam.objects.get(pk=pk)
+        history = data_ayam.history.all().order_by('-timestamp')
+        serializer = DataAyamHistorySerializer(history, many=True)
+        return Response(serializer.data)
     except DataAyam.DoesNotExist:
-        return Response({'error': 'DataAyam not found'}, status=404)
+        return Response({"error": "DataAyam not found"}, status=404)

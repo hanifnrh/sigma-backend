@@ -34,11 +34,3 @@ class DataAyamHistory(models.Model):
 
     def __str__(self):
         return f"History {self.data_ayam.id} - Jumlah Ayam: {self.jumlah_ayam}, Tanggal Panen: {self.tanggal_panen}"
-
-class StartFarming(models.Model):
-    jumlah_ayam = models.IntegerField()
-    target_tanggal = models.DateField()
-    tanggal_mulai = models.DateField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Start Farming {self.id} - {self.jumlah_ayam} ayam"
