@@ -1,4 +1,23 @@
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+
+class CustomUser(AbstractUser):
+    ROLE_CHOICES = [
+        ('staf', 'Staf'),
+        ('pemilik', 'Pemilik'),
+    ]
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='staf')
+
+    groups = models.ManyToManyField(
+        Group,
+        related_name='customuser_groups',  # Tambahkan related_name untuk menghindari konflik
+        blank=True,
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name='customuser_permissions',  # Tambahkan related_name untuk menghindari konflik
+        blank=True,
+    )
 
 class Parameter(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)

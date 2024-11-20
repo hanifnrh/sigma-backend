@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
 from .views import (
     ParameterListCreate,
     ParameterDetail,
@@ -7,6 +8,8 @@ from .views import (
     get_data_ayam_history,
 )
 urlpatterns = [
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'), 
+    
     path('parameters/', ParameterListCreate.as_view(), name='parameter-list-create'),
     path('parameters/<int:pk>/', ParameterDetail.as_view(), name='parameter-detail'),
     
