@@ -165,6 +165,7 @@ class Parameter(models.Model):
             return "text-blue-500"
         else:
             return "text-green-500"
+
 class DataAyam(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     jumlah_ayam_awal = models.IntegerField()
@@ -189,3 +190,10 @@ class DataAyamHistory(models.Model):
 
     def __str__(self):
         return f"History {self.data_ayam.id} - Jumlah Ayam: {self.jumlah_ayam}, Tanggal Panen: {self.tanggal_panen}"
+    
+#create alat model here
+
+
+
+
+#create transkrip model here 

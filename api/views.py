@@ -115,3 +115,11 @@ def get_data_ayam_history(request, pk):
         return Response(serializer.data)
     except DataAyam.DoesNotExist:
         return Response({"error": "DataAyam not found"}, status=404)
+
+
+#List and Create Alat
+
+
+
+
+#Retrieve, update, delete Alat

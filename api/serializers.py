@@ -111,3 +111,11 @@ class DataAyamHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = DataAyamHistory
         fields = ['id', 'data_ayam', 'jumlah_ayam_awal', 'tanggal_mulai', 'tanggal_panen', 'jumlah_ayam', 'mortalitas', 'usia_ayam', 'timestamp']
+
+#create alat serializer here
+
+
+
+
+
+#create transkrip serializer here
