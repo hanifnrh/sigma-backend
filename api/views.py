@@ -84,6 +84,7 @@ class DataAyamListCreate(generics.ListCreateAPIView):
 
 # Retrieve, Update, and Delete Parameter
 class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = DataAyam.objects.all()
     serializer_class = DataAyamSerializer
 
