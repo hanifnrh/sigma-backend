@@ -26,12 +26,21 @@ class LoginView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(username=username, password=password)
+         print(f"DEBUG - Authenticate User: {user}")  # Cek apakah user terautentikasi
         if user:
+            print(f"DEBUG - User Type: {type(user)}")  # Pastikan ini CustomUser
+            print(f"DEBUG - User ID: {user.id}, Role: {user.role}")  # Debugging role
+    
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-                'user': UserSerializer(user).data
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'role': user.role,  # Pastikan role ada
+                }
             })
         return Response({'error': 'Invalid credentials'}, status=400)
 
