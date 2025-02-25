@@ -4,7 +4,7 @@ from django.db import models
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
         ('staf', 'Staf'),
-        ('pemilik', 'Pemilik'),
+        ('pemilik', 'Pemilik'), ('Alat', 'alat')
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='staf')
 
@@ -180,12 +180,12 @@ class DataAyam(models.Model):
 
 class DataAyamHistory(models.Model):
     data_ayam = models.ForeignKey(DataAyam, on_delete=models.CASCADE, related_name="history")
-    jumlah_ayam_awal = models.IntegerField()
-    tanggal_mulai = models.DateField()
-    tanggal_panen = models.DateField()
-    jumlah_ayam = models.IntegerField()
-    mortalitas = models.FloatField()
-    usia_ayam = models.IntegerField()
+    #jumlah_ayam_awal = models.IntegerField()
+    #tanggal_mulai = models.DateField()
+    #tanggal_panen = models.DateField()
+    #jumlah_ayam = models.IntegerField()
+    #mortalitas = models.FloatField()
+    #usia_ayam = models.IntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)  # Tanggal dan waktu saat perubahan tercatat
 
     def __str__(self):

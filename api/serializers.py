@@ -90,15 +90,16 @@ class DataAyamSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         # Simpan data lama untuk history
-        DataAyamHistory.objects.create(
-            data_ayam=instance,
-            jumlah_ayam_awal=instance.jumlah_ayam_awal,
-            tanggal_mulai=instance.tanggal_mulai,
-            tanggal_panen=instance.tanggal_panen,
-            jumlah_ayam=instance.jumlah_ayam,
-            mortalitas=instance.mortalitas,
-            usia_ayam=instance.usia_ayam
-        )
+        # DataAyamHistory.objects.create(
+        #     data_ayam=instance,
+        #     jumlah_ayam_awal=instance.jumlah_ayam_awal,
+        #     tanggal_mulai=instance.tanggal_mulai,
+        #     tanggal_panen=instance.tanggal_panen,
+        #     jumlah_ayam=instance.jumlah_ayam,
+        #     mortalitas=instance.mortalitas,
+        #     usia_ayam=instance.usia_ayam
+        # )
+        DataAyamHistory.objects.create(data_ayam=instance,)
         
         # Update instance dengan data baru
         for attr, value in validated_data.items():
@@ -110,8 +111,18 @@ class DataAyamSerializer(serializers.ModelSerializer):
 class DataAyamHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = DataAyamHistory
-        fields = ['id', 'data_ayam', 'jumlah_ayam_awal', 'tanggal_mulai', 'tanggal_panen', 'jumlah_ayam', 'mortalitas', 'usia_ayam', 'timestamp']
+        #fields = ['id', 'data_ayam', 'jumlah_ayam_awal', 'tanggal_mulai', 'tanggal_panen', 'jumlah_ayam', 'mortalitas', 'usia_ayam', 'timestamp']
+        fields = ['id', 'data_ayam', 'data_ayam_details', 'timestamps']
 
+    def get_data_ayam_details(self, obj):
+        return {
+            "jumlah_ayam": obj.data_ayam.jumlah_ayam,
+            "mortalitas": obj.data_ayam.mortalitas,
+            "usia_ayam": obj.data_ayam.usia_ayam,
+            "tanggal_mulai": obj.data_ayam.tanggal_mulai,
+            "jumlah_ayam_awal": obj.data_ayam.jumlah_ayam_awal,
+            "tanggal_panen": obj.data_ayam.tanggal_panen,
+        }
 #create alat serializer here
 
 

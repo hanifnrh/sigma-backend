@@ -19,6 +19,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserSerializer
+from django.core.cache import cache
 
 class LoginView(APIView):
     def post(self, request):
@@ -86,15 +87,17 @@ class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
             original_data[key] != updated_data.get(key, original_data[key])
             for key in ["jumlah_ayam", "mortalitas", "usia_ayam"]
         ):
-            DataAyamHistory.objects.create(
-                data_ayam=instance,
-                jumlah_ayam_awal=instance.jumlah_ayam_awal,
-                tanggal_mulai=instance.tanggal_mulai,
-                tanggal_panen=instance.tanggal_panen,
-                jumlah_ayam=updated_data.get("jumlah_ayam", instance.jumlah_ayam),
-                mortalitas=updated_data.get("mortalitas", instance.mortalitas),
-                usia_ayam=updated_data.get("usia_ayam", instance.usia_ayam),
-            )
+            # function lama, kita mencoba query retrieve menggunakan join table 
+            # DataAyamHistory.objects.create(
+            #     data_ayam=instance,
+            #     jumlah_ayam_awal=instance.jumlah_ayam_awal,
+            #     tanggal_mulai=instance.tanggal_mulai,
+            #     tanggal_panen=instance.tanggal_panen,
+            #     jumlah_ayam=updated_data.get("jumlah_ayam", instance.jumlah_ayam),
+            #     mortalitas=updated_data.get("mortalitas", instance.mortalitas),
+            #     usia_ayam=updated_data.get("usia_ayam", instance.usia_ayam),
+            # )
+            DataAyamHistory.objects.create(data_ayam = instance)
 
         # Simpan perubahan
         self.perform_update(serializer)
@@ -117,9 +120,42 @@ def get_data_ayam_history(request, pk):
         return Response({"error": "DataAyam not found"}, status=404)
 
 
-#List and Create Alat
 
 
+class CommandView(APIView):
+    #API untuk mengirim perinah
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        #method untuk esp32 meminta perintah
+        #Only users with the role 'alat' or 'Alat' can use this APIView
+        if request.user.role.lower() != 'alat':
+            return Response({"error": "Akses tidak diizinkan kecuali untuk alat"})
+        else:
+            command = cache.get(f"esp32_command_{request.user.id}", None)
+            return Response({"command": command})
 
+    def post(self, request):
+        #Only authorized commands to esp32
 
-#Retrieve, update, delete Alat
+        if request.user.role not in ["pemilik", "Pemilik", "Staf", "staf"]:
+            return Response({"error": "Hanya pemilik atau staff yang dapat mengirim perintah"})
+        
+        user_id = request.data.get("user_id")
+        command = request.data.get("command")
+
+        #Validate user ID
+
+        try:
+            alat = CustomUser.objects.get(id=user_id, role_iexact="alat")
+
+        except CustomUser.DoesNotExist:
+            return Response({"error": "alat tidak ditemukan"}, status=404)
+
+        if command not in ["wake", "sleep"]:
+            return Response({"error": "Perintah tidak valid, gunakan 'wake' atau 'sleep'"})
+    
+        #Store command in cache
+        cache.set(f"esp32_command_{alat.id}", command, timeout=300) #simpan buat 5 menit
+
+        return Response({"message": f"Perintah '{command}' dikirim ke {alat.username}"})
