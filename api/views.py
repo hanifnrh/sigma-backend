@@ -1,56 +1,99 @@
-from rest_framework import generics
-from .models import Parameter
-from .serializers import ParameterSerializer
+from rest_framework import generics, serializers, status
 from rest_framework.decorators import api_view
-from rest_framework.decorators import api_view
-from .models import DataAyam
-from .serializers import DataAyamSerializer
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from .models import DataAyam, DataAyamHistory
-from .serializers import DataAyamSerializer
-from rest_framework import status
-from .serializers import DataAyamHistorySerializer
-from rest_framework.views import APIView
-from rest_framework import serializers
-from .models import CustomUser
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserSerializer
 
+from .models import (
+    Parameter,
+    DataAyam,
+    DataAyamHistory,
+    CustomUser
+)
+from .serializers import (
+    ParameterSerializer,
+    DataAyamSerializer,
+    DataAyamHistorySerializer,
+    UserSerializer,
+    UserRegisterSerializer
+)
+from .permissions import IsOwner, IsStaff
+import logging
+
+logger = logging.getLogger(__name__)
 class LoginView(APIView):
-    def post(self, request):
-        from django.contrib.auth import authenticate
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(username=username, password=password)
-         print(f"DEBUG - Authenticate User: {user}")  # Cek apakah user terautentikasi
-        if user:
-            print(f"DEBUG - User Type: {type(user)}")  # Pastikan ini CustomUser
-            print(f"DEBUG - User ID: {user.id}, Role: {user.role}")  # Debugging role
+   def post(self, request):
+    from django.contrib.auth import authenticate
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user = authenticate(username=username, password=password)
+
+    print(f"DEBUG - Authenticate User: {user}")  # Cek apakah user terautentikasi
+    if user:
+        print(f"DEBUG - User Type: {type(user)}")  # Pastikan ini CustomUser
+        print(f"DEBUG - User ID: {user.id}, Role: {user.role}")  # Debugging role
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'role': user.role,  # Pastikan role ada
+            }
+        })
+    return Response({'error': 'Invalid credentials'}, status=400)
+
     
-            refresh = RefreshToken.for_user(user)
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = UserRegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
             return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
+                'message': 'User created successfully!',
                 'user': {
                     'id': user.id,
                     'username': user.username,
                     'email': user.email,
-                    'role': user.role,  # Pastikan role ada
+                    'role': user.role
                 }
-            })
-        return Response({'error': 'Invalid credentials'}, status=400)
-
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class UserDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
         return Response(UserSerializer(user).data)
+from rest_framework_simplejwt.exceptions import InvalidToken
 
+class RefreshTokenView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.data.get('refresh')
+        try:
+            refresh = RefreshToken(refresh_token)
+            new_access_token = str(refresh.access_token)
+            return Response({'access': new_access_token})
+        except InvalidToken:
+            return Response({'error': 'Invalid refresh token'}, status=400)
+
+class OwnerOnlyView(APIView):
+    permission_classes = [IsOwner]
+
+    def get(self, request):
+        return Response({"message": "Welcome, Owner!"})
+
+class StaffOnlyView(APIView):
+    permission_classes = [IsStaff]
+
+    def get(self, request):
+        return Response({"message": "Welcome, Staff!"})
 
 # List and Create Parameter
 class ParameterListCreate(generics.ListCreateAPIView):
@@ -124,11 +167,3 @@ def get_data_ayam_history(request, pk):
         return Response(serializer.data)
     except DataAyam.DoesNotExist:
         return Response({"error": "DataAyam not found"}, status=404)
-
-
-#List and Create Alat
-
-
-
-
-#Retrieve, update, delete Alat
