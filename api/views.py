@@ -35,6 +35,23 @@ class LoginView(APIView):
                 'user': UserSerializer(user).data
             })
         return Response({'error': 'Invalid credentials'}, status=400)
+    
+
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = UserRegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                'message': 'User created successfully!',
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'role': user.role
+                }
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserDetailView(APIView):
     permission_classes = [IsAuthenticated]

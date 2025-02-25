@@ -7,6 +7,8 @@ from .views import (
     DataAyamListCreate,
     DataAyamDetail,
     get_data_ayam_history,
+    LoginView,
+    RegisterView,
 )
 urlpatterns = [
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'), 
@@ -18,4 +20,5 @@ urlpatterns = [
     path('data-ayam/<int:pk>/', DataAyamDetail.as_view(), name='data-ayam-detail'),
     
     path('data-ayam/<int:pk>/history/', get_data_ayam_history, name='data-ayam-history'),
+    path('register/', RegisterView.as_view(), name="register")
 ]
