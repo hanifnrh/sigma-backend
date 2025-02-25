@@ -64,6 +64,7 @@ class UserDetailView(APIView):
 
 # List and Create Parameter
 class ParameterListCreate(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Parameter.objects.all()
     serializer_class = ParameterSerializer
     
@@ -74,11 +75,13 @@ class ParameterListCreate(generics.ListCreateAPIView):
 
 # Retrieve, Update, and Delete Parameter
 class ParameterDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Parameter.objects.all()
     serializer_class = ParameterSerializer
     
 # List and Create Parameter
 class DataAyamListCreate(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = DataAyam.objects.all()
     serializer_class = DataAyamSerializer
 
