@@ -13,8 +13,8 @@ from .views import (
 )
 urlpatterns = [
     #path('api-token-auth/', obtain_auth_token, name='api_token_auth'), 
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     path('parameters/', ParameterListCreate.as_view(), name='parameter-list-create'),
     path('parameters/<int:pk>/', ParameterDetail.as_view(), name='parameter-detail'),

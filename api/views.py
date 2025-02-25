@@ -11,6 +11,7 @@ from .models import DataAyam, DataAyamHistory
 from .serializers import DataAyamSerializer
 from rest_framework import status
 from .serializers import DataAyamHistorySerializer
+from .serializers import UserRegisterSerializer
 from rest_framework.views import APIView
 from rest_framework import serializers
 from .models import CustomUser
