@@ -126,10 +126,11 @@ class DataAyamSerializer(serializers.ModelSerializer):
         return instance
 
 class DataAyamHistorySerializer(serializers.ModelSerializer):
+    data_ayam_details = serializers.SerializerMethodField()
     class Meta:
         model = DataAyamHistory
         #fields = ['id', 'data_ayam', 'jumlah_ayam_awal', 'tanggal_mulai', 'tanggal_panen', 'jumlah_ayam', 'mortalitas', 'usia_ayam', 'timestamp']
-        fields = ['id', 'data_ayam', 'data_ayam_details', 'timestamps']
+        fields = ['id', 'data_ayam', 'data_ayam_details', 'timestamp']
 
     def get_data_ayam_details(self, obj):
         return {

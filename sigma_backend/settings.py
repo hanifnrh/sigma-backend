@@ -64,13 +64,13 @@ MIDDLEWARE = [
 
 CSRF_TRUSTED_ORIGINS = ["https://sigma-backend-production.up.railway.app"]
 
-CSRF_COOKIE_SECURE = True
+#CSRF_COOKIE_SECURE = True
 
-#CORS_ALLOWED_ORIGINS = [
- #   "*",  # Frontend URL
-#]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
-CORS_ALLOW_ALL_ORIGINS = True
+#CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'sigma_backend.urls'
 

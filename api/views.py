@@ -67,13 +67,24 @@ class ParameterListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Parameter.objects.all()
     serializer_class = ParameterSerializer
+
+# Bulk or delete all
+class ParameterListDelete(APIView):
+    permission_classes = [IsAuthenticated]
     
     def delete(self, request, *args, **kwargs):
-        # Menghapus seluruh data parameter
-        Parameter.objects.all().delete()
-        return Response({"message": "All parameters have been deleted successfully."}, status=status.HTTP_204_NO_CONTENT)  
+        param_ids = request.data.get("ids", None)
 
-# Retrieve, Update, and Delete Parameter
+        if param_ids :
+            deleted_count, _ = Parameter.objects.filter(id__in=param_ids).delete()
+            return Response({"message" : f"Berhasil menghapus {deleted_count} parameter"}, status = 204)
+        
+        #delete all if no specific ids provded
+        deleted_count, _ = Parameter.objects().all().delete()
+
+        return Response({"message": f"Berhasil menghapus semua {deleted_count} parameter"})
+
+# Retrieve, Update, and Delete specific Parameter
 class ParameterDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Parameter.objects.all()
@@ -85,7 +96,22 @@ class DataAyamListCreate(generics.ListCreateAPIView):
     queryset = DataAyam.objects.all()
     serializer_class = DataAyamSerializer
 
-# Retrieve, Update, and Delete Parameter
+class DataAyamDelete(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request, *args, **kwargs):
+        param_ids = request.data.get("ids", None)
+
+        if param_ids :
+            deleted_count, _ = DataAyam.objects.filter(id__in=param_ids).delete()
+            return Response({"message" : f"Berhasil menghapus {deleted_count} parameter"}, status = 204)
+        
+        #delete all if no specific ids provded
+        deleted_count, _ = DataAyam.objects().all().delete()
+
+        return Response({"message": f"Berhasil menghapus semua {deleted_count} parameter"})
+
+# Retrieve, Update, and Delete specific Parameter
 class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = DataAyam.objects.all()
@@ -130,24 +156,19 @@ class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+#List all history
+class DataAyamHistoryDetailList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = DataAyam.objects.all()
+    serializer_class = DataAyamSerializer
     
 
-class DataAyamHistoryList(generics.ListAPIView):
+# Retrive and delete specific history
+class DataAyamHistoryDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = DataAyamHistory.objects.all()
     serializer_class = DataAyamHistorySerializer
-
-    def get_queryset(self):
-        return DataAyamHistory.objects.filter(data_ayam_id = self.kwargs["pk"]).order_by("-timestamp")
-    
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-
-        if not queryset.exists():
-            return Response({"error":"tidak ada rekaman histori"}, status=404)
-        
-        serializer = self.get_serializer(queryset, many=True)
-
-        return Response(serializer.data, status = 200)
-        
 
 
 
