@@ -131,15 +131,18 @@ class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-@api_view(['GET'])
-def get_data_ayam_history(request, pk):
-    try:
-        data_ayam = DataAyam.objects.get(pk=pk)
-        history = data_ayam.history.all().order_by('-timestamp')
-        serializer = DataAyamHistorySerializer(history, many=True)
-        return Response(serializer.data)
-    except DataAyam.DoesNotExist:
-        return Response({"error": "DataAyam not found"}, status=404)
+
+class DataAyamHistoryView(APIView):
+    def get(self, request, pk):
+        history = DataAyamHistory.objects.filter(data_ayam_id = pk).order_by("-timestamp")
+
+        if not history.exist():
+            return Response({"error" :"tidak ada rekaman histori"})
+        
+        serializers = DataAyamHistorySerializer(history, many=True)
+
+        return Response(serializers.data, status = status.HTTP_200_OK)
+        
 
 
 

@@ -189,7 +189,7 @@ class DataAyamHistory(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)  # Tanggal dan waktu saat perubahan tercatat
 
     def __str__(self):
-        return f"History {self.data_ayam.id} - Jumlah Ayam: {self.jumlah_ayam}, Tanggal Panen: {self.tanggal_panen}"
+        return f"History {self.data_ayam.id} - Jumlah Ayam: {self.data_ayam.jumlah_ayam}, Tanggal Panen: {self.data_ayam.tanggal_panen}"
     
 #create alat model here
 
