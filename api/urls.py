@@ -7,7 +7,7 @@ from .views import (
     ParameterDetail,
     DataAyamListCreate,
     DataAyamDetail,
-    get_data_ayam_history,
+    DataAyamHistoryList,
     LoginView,
     RegisterView,
 )
@@ -22,7 +22,7 @@ urlpatterns = [
     path('data-ayam/', DataAyamListCreate.as_view(), name='data-ayam-list-create'),
     path('data-ayam/<int:pk>/', DataAyamDetail.as_view(), name='data-ayam-detail'),
     
-    path('data-ayam/<int:pk>/history/', get_data_ayam_history, name='data-ayam-history'),
+    path('data-ayam/<int:pk>/history/', DataAyamHistoryList.as_view(), name='data-ayam-history'),
     path('register/', RegisterView.as_view(), name="register"),
     path('login/', LoginView.as_view(), name="login"),
 
