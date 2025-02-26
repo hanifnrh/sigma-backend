@@ -76,13 +76,15 @@ class ParameterListDelete(APIView):
         param_ids = request.data.get("ids", None)
 
         if param_ids :
-            deleted_count, _ = Parameter.objects.filter(id__in=param_ids).delete()
-            return Response({"message" : f"Berhasil menghapus {deleted_count} parameter"}, status = 204)
+            deleted_count = Parameter.objects.filter(id__in=param_ids).count()
+            Parameter.objects.filter(id__in=param_ids).delete()
+            return Response({"message" : f"Berhasil menghapus {deleted_count} parameter"}, status = 200)
         
         #delete all if no specific ids provded
-        deleted_count, _ = Parameter.objects().all().delete()
+        deleted_count = Parameter.objects.count()
+        Parameter.objects.all().delete()
 
-        return Response({"message": f"Berhasil menghapus semua {deleted_count} parameter"})
+        return Response({"message": f"Berhasil menghapus semua {deleted_count} parameter"}, status = 200)
 
 # Retrieve, Update, and Delete specific Parameter
 class ParameterDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -104,13 +106,15 @@ class DataAyamDelete(APIView):
         param_ids = request.data.get("ids", None)
 
         if param_ids :
-            deleted_count, _ = DataAyam.objects.filter(id__in=param_ids).delete()
-            return Response({"message" : f"Berhasil menghapus {deleted_count} parameter"}, status = 204)
+            deleted_count = DataAyam.objects.filter(id__in=param_ids).count()
+            DataAyam.objects.filter(id__in=param_ids).delete()
+            return Response({"message" : f"Berhasil menghapus {deleted_count} parameter"}, status = 200)
         
         #delete all if no specific ids provded
-        deleted_count, _ = DataAyam.objects.all().delete()
+        deleted_count = DataAyam.objects.all().count()
+        DataAyam.objects.all().delete()
 
-        return Response({"message": f"Berhasil menghapus semua {deleted_count} parameter"})
+        return Response({"message": f"Berhasil menghapus semua {deleted_count} parameter"}, status = 200)
 
 # Retrieve, Update, and Delete specific Parameter
 class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
