@@ -132,14 +132,14 @@ class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 
-class DataAyamHistoryList(generics.RetrieveDestroyAPIView):
-    serializer = DataAyamHistorySerializer
+class DataAyamHistoryList(generics.ListAPIView):
+    serializer_class = DataAyamHistorySerializer
 
     def get_queryset(self):
-        return DataAyamHistory.objects.filter(data_ayam_id = self.kwargs["pk"]).order_by("-timestamps")
+        return DataAyamHistory.objects.filter(data_ayam_id = self.kwargs["pk"]).order_by("-timestamp")
     
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset
+        queryset = self.get_queryset()
 
         if not queryset.exists():
             return Response({"error":"tidak ada rekaman histori"}, status=404)
