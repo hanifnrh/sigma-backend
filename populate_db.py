@@ -31,7 +31,7 @@ def populate(n = 10):
         
         #create fake DataAyamHistory
 
-        data_ah = DataAyamHistory.objects.get_or_create(data_ayam = da, jumlah_ayam_awal = random.randint(100, 1000), jumlah_ayam = random.randint(0, 1000), tanggal_mulai = fake.date(), tanggal_panen = fake.date(), mortalitas = random.random(), timestamp = timestamp, usia_ayam = random.randint(0, 30))[0]
+        data_ah = DataAyamHistory.objects.get_or_create(data_ayam = da)[0]
 
         parameter = Parameter.objects.get_or_create(ammonia = random.uniform(0, 30), temperature = random.uniform(0, 30), humidity = random.random(), score = random.randint(0, 100))[0]
 

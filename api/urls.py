@@ -24,6 +24,6 @@ urlpatterns = [
     
     path('data-ayam/<int:pk>/history/', get_data_ayam_history, name='data-ayam-history'),
     path('register/', RegisterView.as_view(), name="register"),
-    path('/login', LoginView.as_view(), name="login"),
+    path('login/', LoginView.as_view(), name="login"),
 
 ]
