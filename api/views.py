@@ -1,12 +1,9 @@
 from rest_framework import generics
 from .models import Parameter
 from .serializers import ParameterSerializer
-from rest_framework.decorators import api_view
-from rest_framework.decorators import api_view
 from .models import DataAyam
 from .serializers import DataAyamSerializer
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from .models import DataAyam, DataAyamHistory
 from .serializers import DataAyamSerializer
 from rest_framework import status
@@ -108,13 +105,13 @@ class DataAyamDelete(APIView):
         if param_ids :
             deleted_count = DataAyam.objects.filter(id__in=param_ids).count()
             DataAyam.objects.filter(id__in=param_ids).delete()
-            return Response({"message" : f"Berhasil menghapus {deleted_count} parameter"}, status = 200)
+            return Response({"message" : f"Berhasil menghapus {deleted_count} data ayam"}, status = 200)
         
         #delete all if no specific ids provded
         deleted_count = DataAyam.objects.all().count()
         DataAyam.objects.all().delete()
 
-        return Response({"message": f"Berhasil menghapus semua {deleted_count} parameter"}, status = 200)
+        return Response({"message": f"Berhasil menghapus semua {deleted_count} data ayam"}, status = 200)
 
 # Retrieve, Update, and Delete specific Parameter
 class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -140,17 +137,16 @@ class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
             original_data[key] != updated_data.get(key, original_data[key])
             for key in ["jumlah_ayam", "mortalitas", "usia_ayam"]
         ):
-            # function lama, kita mencoba query retrieve menggunakan join table 
-            # DataAyamHistory.objects.create(
-            #     data_ayam=instance,
-            #     jumlah_ayam_awal=instance.jumlah_ayam_awal,
-            #     tanggal_mulai=instance.tanggal_mulai,
-            #     tanggal_panen=instance.tanggal_panen,
-            #     jumlah_ayam=updated_data.get("jumlah_ayam", instance.jumlah_ayam),
-            #     mortalitas=updated_data.get("mortalitas", instance.mortalitas),
-            #     usia_ayam=updated_data.get("usia_ayam", instance.usia_ayam),
-            # )
-            DataAyamHistory.objects.create(data_ayam = instance)
+             DataAyamHistory.objects.create(
+                 data_ayam=instance,
+                 jumlah_ayam_awal=instance.jumlah_ayam_awal,
+                 tanggal_mulai=instance.tanggal_mulai,
+                 tanggal_panen=instance.tanggal_panen,
+                 jumlah_ayam=updated_data.get("jumlah_ayam", instance.jumlah_ayam),
+                 mortalitas=updated_data.get("mortalitas", instance.mortalitas),
+                 usia_ayam=updated_data.get("usia_ayam", instance.usia_ayam),
+             )
+            # DataAyamHistory.objects.create(data_ayam = instance)
 
         # Simpan perubahan
         self.perform_update(serializer)

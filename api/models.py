@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+from django.utils import timezone
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
@@ -180,16 +181,16 @@ class DataAyam(models.Model):
 
 class DataAyamHistory(models.Model):
     data_ayam = models.ForeignKey(DataAyam, on_delete=models.CASCADE, related_name="history")
-    #jumlah_ayam_awal = models.IntegerField()
-    #tanggal_mulai = models.DateField()
-    #tanggal_panen = models.DateField()
-    #jumlah_ayam = models.IntegerField()
-    #mortalitas = models.FloatField()
-    #usia_ayam = models.IntegerField()
-    timestamp = models.DateTimeField(auto_now_add=True)  # Tanggal dan waktu saat perubahan tercatat
+    jumlah_ayam_awal = models.IntegerField()
+    tanggal_mulai = models.DateField()
+    tanggal_panen = models.DateField()
+    jumlah_ayam = models.IntegerField()
+    mortalitas = models.FloatField()
+    usia_ayam = models.IntegerField()
+    timestamp = models.DateTimeField(auto_now_add = True)  
 
     def __str__(self):
-        return f"History {self.data_ayam.id} - Jumlah Ayam: {self.data_ayam.jumlah_ayam}, Tanggal Panen: {self.data_ayam.tanggal_panen}"
+        return f"History {self.data_ayam_id} - Jumlah Ayam: {self.jumlah_ayam}, Tanggal Panen: {self.tanggal_panen}"
     
 #create alat model here
 
