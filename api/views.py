@@ -1,23 +1,17 @@
-from rest_framework import generics
-from .models import Parameter
-from .serializers import ParameterSerializer
-from .models import DataAyam
-from .serializers import DataAyamSerializer
-from rest_framework.response import Response
-from .models import DataAyam, DataAyamHistory
-from .serializers import DataAyamSerializer
-from rest_framework import status
-from .serializers import DataAyamHistorySerializer
-from .serializers import UserRegisterSerializer
-from rest_framework.views import APIView
-from rest_framework import serializers
-from .models import CustomUser
+from django.core.cache import cache
+from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserSerializer
-from django.core.cache import cache
+
+from .models import Parameter, DataAyam, DataAyamHistory, CustomUser
+
+from .serializers.data_ayam_history.data_ayam_history_serializers import DataAyamHistorySerializer
+from .serializers.data_ayam.data_ayam_serializers import DataAyamSerializer
+from .serializers.user.user_serializers import UserRegisterSerializer, UserSerializer
+from .serializers.parameter.parameter_serializers import ParameterSerializer
+
 
 class LoginView(APIView):
     def post(self, request):
@@ -120,43 +114,20 @@ class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = DataAyamSerializer
 
     def partial_update(self, request, *args, **kwargs):
+
         instance = self.get_object()
-        original_data = {
-            "jumlah_ayam": instance.jumlah_ayam,
-            "mortalitas": instance.mortalitas,
-            "usia_ayam": instance.usia_ayam,
-        }
-
-        # Update instance with validated data
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-
-        # Simpan riwayat jika field tertentu berubah
-        updated_data = serializer.validated_data
-        if any(
-            original_data[key] != updated_data.get(key, original_data[key])
-            for key in ["jumlah_ayam", "mortalitas", "usia_ayam"]
-        ):
-             DataAyamHistory.objects.create(
-                 data_ayam=instance,
-                 jumlah_ayam_awal=instance.jumlah_ayam_awal,
-                 tanggal_mulai=instance.tanggal_mulai,
-                 tanggal_panen=instance.tanggal_panen,
-                 jumlah_ayam=updated_data.get("jumlah_ayam", instance.jumlah_ayam),
-                 mortalitas=updated_data.get("mortalitas", instance.mortalitas),
-                 usia_ayam=updated_data.get("usia_ayam", instance.usia_ayam),
-             )
-            # DataAyamHistory.objects.create(data_ayam = instance)
-
-        # Simpan perubahan
-        self.perform_update(serializer)
-
-        return Response(serializer.data)
+        serializer = self.get_serializer(instance, data = request.data, partial=True)
+        
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        
+        return Response(serializer.errors, status = 400)
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": " entry data ayam berhasil di hapus"}, status=204)
 
 #List or create all
 class DataAyamHistoryList(generics.ListAPIView):
@@ -173,11 +144,13 @@ class DataAyamHistoryList(generics.ListAPIView):
 
 
 
-# Retrive and delete specific history
-class DataAyamHistoryDetail(generics.RetrieveUpdateDestroyAPIView):
+# Retrive specific history
+class DataAyamHistoryDetail(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = DataAyamHistory.objects.all()
     serializer_class = DataAyamHistorySerializer
+    def get_queryset(self):
+        # Return all records with the given data_ayam_id
+        return DataAyamHistory.objects.filter(data_ayam_id=self.kwargs["pk"]).order_by("-timestamp")
 
 
 

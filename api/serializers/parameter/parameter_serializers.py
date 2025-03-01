@@ -1,9 +1,6 @@
 from rest_framework import serializers
-from .models import DataAyam, DataAyamHistory, Parameter, CustomUser, Alat
 
-
-
-
+from api.models import Parameter
 
 class ParameterSerializer(serializers.ModelSerializer):
     ammonia_status = serializers.SerializerMethodField()
@@ -65,39 +62,3 @@ class ParameterSerializer(serializers.ModelSerializer):
     
     def get_color(self, obj):
         return obj.get_status_color()
-
-class DataAyamSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DataAyam
-        fields = ['id', 'timestamp', 'tanggal_mulai', 'jumlah_ayam_awal', 'tanggal_panen', 'jumlah_ayam', 'mortalitas', 'usia_ayam']
-        
-    def get_history(self, obj):
-        # Ambil history terkait dengan instance ini
-        histories = obj.history.all().order_by('-timestamp')
-        return DataAyamHistorySerializer(histories, many=True).data
-    
-    def update(self, instance, validated_data):
-        #Simpan data lama untuk history
-        DataAyamHistory.objects.create(
-            data_ayam=instance,
-            jumlah_ayam_awal=instance.jumlah_ayam_awal,
-            tanggal_mulai=instance.tanggal_mulai,
-            tanggal_panen=instance.tanggal_panen,
-            jumlah_ayam=instance.jumlah_ayam,
-            mortalitas=instance.mortalitas,
-            usia_ayam=instance.usia_ayam
-        )
-        #DataAyamHistory.objects.create(data_ayam=instance,)
-        
-        # Update instance dengan data baru
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        
-        return instance
-
-
-
-
-
-#create transkrip serializer here

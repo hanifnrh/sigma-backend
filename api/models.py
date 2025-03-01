@@ -2,10 +2,11 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.utils import timezone
 
+#User
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
         ('staf', 'Staf'),
-        ('pemilik', 'Pemilik'), ('Alat', 'alat')
+        ('pemilik', 'Pemilik')
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='staf')
 
@@ -20,6 +21,17 @@ class CustomUser(AbstractUser):
         blank=True,
     )
 
+#model untuk alat
+class Alat(models.Model):
+    STATUS_CHOICES = [
+        (0, 'Aktif'),
+        (1, 'Nonaktif')
+    ]
+    alat_id = models.CharField(max_length = 255, unique = True)
+    battery_level = models.FloatField()
+    status = models.IntegerField(default = 0, choices=STATUS_CHOICES)
+
+#model untuk parameter
 class Parameter(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     ammonia = models.FloatField()
