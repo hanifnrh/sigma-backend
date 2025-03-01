@@ -1,3 +1,7 @@
+from rest_framework import serializers
+from api.models import Alat
+
+
 class AlatSerializer(serializers.ModelSerializer):
     
     class Meta:
