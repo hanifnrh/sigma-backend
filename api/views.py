@@ -5,13 +5,14 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Parameter, DataAyam, DataAyamHistory, CustomUser
+from .models import Parameter, DataAyam, DataAyamHistory, CustomUser, Alat
 
 from .serializers.data_ayam_history.data_ayam_history_serializers import DataAyamHistorySerializer
 from .serializers.data_ayam.data_ayam_serializers import DataAyamSerializer
 from .serializers.user.user_serializers import UserRegisterSerializer, UserSerializer
 from .serializers.parameter.parameter_serializers import ParameterSerializer
-
+from .serializers.alat.alat_serializers import AlatSerializer
+from .permissions import IsAlatRole
 
 class LoginView(APIView):
     def post(self, request):
@@ -83,13 +84,13 @@ class ParameterDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Parameter.objects.all()
     serializer_class = ParameterSerializer
     
-# List and Create Parameter
+# List and Create DataAyam
 class DataAyamListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = DataAyam.objects.all()
     serializer_class = DataAyamSerializer
 
-# Bulk or delete all
+# Bulk or delete all DataAyam
 class DataAyamDelete(APIView):
     permission_classes = [IsAuthenticated]
     
@@ -107,7 +108,7 @@ class DataAyamDelete(APIView):
 
         return Response({"message": f"Berhasil menghapus semua {deleted_count} data ayam"}, status = 200)
 
-# Retrieve, Update, and Delete specific Parameter
+# Retrieve, Update, and Delete specific DataAyam
 class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = DataAyam.objects.all()
@@ -161,7 +162,7 @@ class CommandView(APIView):
     
     def get(self, request):
         #method untuk esp32 meminta perintah
-        #Only users with the role 'alat' or 'Alat' can use this APIView
+        #Hanya entitas pengguna dengan role "alat" yang bisa menggunakan API view ini
         if request.user.role.lower() != 'alat':
             return Response({"error": "Akses tidak diizinkan kecuali untuk alat"})
         else:
@@ -171,7 +172,7 @@ class CommandView(APIView):
     def post(self, request):
         #Only authorized commands to esp32
 
-        if request.user.role not in ["pemilik", "Pemilik", "Staf", "staf"]:
+        if request.user.role.lower() not in ["pemilik", "staf"]:
             return Response({"error": "Hanya pemilik atau staff yang dapat mengirim perintah"})
         
         user_id = request.data.get("user_id")
@@ -192,3 +193,14 @@ class CommandView(APIView):
         cache.set(f"esp32_command_{alat.id}", command, timeout=300) #simpan buat 5 menit
 
         return Response({"message": f"Perintah '{command}' dikirim ke {alat.username}"})
+    
+class AlatCreateUpdateView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated, IsAlatRole]
+    serializer_class = AlatSerializer
+
+class AlatListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Alat.objects.all()
+    serializer_class = AlatSerializer
+
+

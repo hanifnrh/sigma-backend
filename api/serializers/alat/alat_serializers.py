@@ -7,14 +7,22 @@ class AlatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alat
         fields = ['alat_id', 'battery_level', 'status']
+        extra_kwargs = {
+            'alat_id': {'validators': []} #try disabling this
+        }
 
-class AlatTokenSerializer(serializers.Serializer):
-    
-    alat_id = serializers.CharField()
-   
-    #periksa apakah alat id muncul di basis data
     def validate_alat_id(self, value):
-        try: 
-            alat = Alat.objects.get(alat_id = value)
-        except Alat.DoesNotExist:
-            return serializers.ValidationError("ID alat tidak valid")
+
+        if Alat.objects.filter(alat_id = value).exists():
+            return value
+        return value
+
+    def create(self, validated_data):
+        alat, _ = Alat.objects.update_or_create(
+            alat_id = validated_data["alat_id"],
+            defaults = {
+                "status": validated_data["status"],
+                "battery_level": validated_data["battery_level"]
+            }
+        )
+        return alat

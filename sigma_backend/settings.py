@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('SECRET_KEY','django-insecure-f=tk_oz*#z4a8%!#%h&j7p*xc2d
 # DEBUG = os.getenv('DEBUG', 'False') == 'True'
 DEBUG = True
 
-ALLOWED_HOSTS = ['sigma-backend-production.up.railway.app']
+ALLOWED_HOSTS = ['sigma-backend-production.up.railway.app','sigma-backend.railway.internal']
 
 AUTH_USER_MODEL = 'api.CustomUser'
 

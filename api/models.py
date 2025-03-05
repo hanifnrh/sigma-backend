@@ -6,7 +6,8 @@ from django.utils import timezone
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
         ('staf', 'Staf'),
-        ('pemilik', 'Pemilik')
+        ('pemilik', 'Pemilik'),
+        ('alat', 'Alat'),
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='staf')
 
