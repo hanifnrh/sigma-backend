@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.utils import timezone
-
+from django.core.exceptions import ValidationError
 #User
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
@@ -10,6 +10,7 @@ class CustomUser(AbstractUser):
         ('alat', 'Alat'),
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='staf')
+    profile_picture = models.ImageField(upload_to="profile_pictures/", null = True, blank = True)
 
     groups = models.ManyToManyField(
         Group,
@@ -21,6 +22,17 @@ class CustomUser(AbstractUser):
         related_name='customuser_permissions',  # Tambahkan related_name untuk menghindari konflik
         blank=True,
     )
+
+    def clean(self):
+        if self.role in ['staf', 'pemilik'] and not self.email:
+            raise ValidationError({"email": "staf dan pemilik harus memiliki email"})
+        
+        if self.role == "alat":
+            self.email = "" #pastikaan embedded system tidak perlu email
+
+    def save(self, *args, **kwargs):
+        self.clean() #lakukan validasi sebelum menyimpan
+        super().save(*args, **kwargs)
 
 #model untuk alat
 class Alat(models.Model):
@@ -34,10 +46,15 @@ class Alat(models.Model):
 
 #model untuk parameter
 class Parameter(models.Model):
+    FLOOR_CHOICES = [
+        (1, "first floor"),
+        (2, "second floor"),
+    ]
     timestamp = models.DateTimeField(auto_now_add=True)
     ammonia = models.FloatField()
     temperature = models.FloatField()
     humidity = models.FloatField()
+    floor = models.IntegerField(choices=FLOOR_CHOICES, default = 1)
     score = models.FloatField(null=True, blank=True)
     status = models.CharField(max_length=50, null=True, blank=True, default="Error")
 

@@ -14,7 +14,8 @@ from .views import (
     LoginView,
     RegisterView,
     AlatCreateUpdateView,
-    AlatListView
+    AlatListView,
+    UpdateUserProfilePictureView
 )
 urlpatterns = [
     #path('api-token-auth/', obtain_auth_token, name='api_token_auth'), 
@@ -23,8 +24,7 @@ urlpatterns = [
     path('parameters/', ParameterListCreate.as_view(), name='parameter-list-create'),
     path('parameters/<int:pk>/', ParameterDetail.as_view(), name='parameter-detail'),
     path('parameters/delete/', ParameterListDelete().as_view(), name = "parameter-bulk-all-delete" ),
-    path('parameters-lt1/', ParameterListCreate().as_view(), name="parameter-lt1"),
-    path('parameters-lt2/', ParameterListCreate().as_view(), name="parameter-lt2"),
+    path('parameters/floor/<int:floor>/', ParameterListCreate.as_view(), name="parameters-list-create-floor"),
     path('data-ayam/', DataAyamListCreate.as_view(), name='data-ayam-list-create'),
     path('data-ayam/<int:pk>/', DataAyamDetail.as_view(), name='data-ayam-detail'),
     path('data-ayam/delete/', DataAyamDelete.as_view(), name='data-ayam-bulk-all-delete' ),
@@ -34,5 +34,5 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name="login"),
     path('alat/', AlatCreateUpdateView().as_view(), name="alat-create-update"),
     path('alat/list/', AlatListView().as_view(), name="alat-list" ),
-
+    path('user/<int:id>/profile-picture', UpdateUserProfilePictureView.as_view(), name = 'update-profile-picture' ),
 ]

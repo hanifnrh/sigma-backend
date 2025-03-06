@@ -1,15 +1,18 @@
 from django.core.cache import cache
+from django.utils.timezone import now, timedelta
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .models import Parameter, DataAyam, DataAyamHistory, CustomUser, Alat
 
 from .serializers.data_ayam_history.data_ayam_history_serializers import DataAyamHistorySerializer
 from .serializers.data_ayam.data_ayam_serializers import DataAyamSerializer
-from .serializers.user.user_serializers import UserRegisterSerializer, UserSerializer
+from .serializers.user.user_serializers import UserRegisterSerializer, UserSerializer, ProfilePictureSerializer
 from .serializers.parameter.parameter_serializers import ParameterSerializer
 from .serializers.alat.alat_serializers import AlatSerializer
 from .permissions import IsAlatRole
@@ -53,12 +56,57 @@ class UserDetailView(APIView):
         user = request.user
         return Response(UserSerializer(user).data)
 
+#update profile picture    
+class UpdateUserProfilePictureView(generics.UpdateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = ProfilePictureSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
 
 # List and Create Parameter
 class ParameterListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Parameter.objects.all()
     serializer_class = ParameterSerializer
+
+    def get_queryset(self):
+        queryset = Parameter.objects.all()
+        floor = self.kwargs.get("floor")
+        time_range = self.request.query_params.get("time_range", None)
+
+        if floor:
+            return Parameter.objects.filter(floor=floor) #jika floor diberi nilai kembalikan berdasarkan floor
+        
+        if time_range:
+            #unit waktu (m = menit, h = jam, d = hari, mo = bulan)
+            try:
+                if time_range.endswith("mo") : #bulan
+                    value = int(time_range[:-2])
+                    time_threshold = now() - timedelta(days = value * 30)
+                else:
+                    unit = time_range[-1]
+                    value = int(time_range[:-1])
+
+                    if unit == 'm': #menit
+                        time_threshold = now() - timedelta(minutes = value)
+                    elif unit == 'h': #jam
+                        time_threshold = now() - timedelta(hours = value)
+                    elif unit == 'd' : #hari
+                        time_threshold = now() - timedelta(days = value)
+            
+                    else:
+                        raise ValueError("Satuan waktu tidak valid")
+                
+                queryset = queryset.filter(timestamp__gte=time_threshold)
+                    
+            except (ValueError, TypeError):
+                raise ValidationError ({"error": "format time_range tidak valid"})
+                
+        return queryset
+    
+    def perform_create(self, serializer):
+        #memastikan nilai floor diambil dari url
+        serializer.save(floor=self.kwargs.get("floor"))
 
 # Bulk or delete all
 class ParameterListDelete(APIView):

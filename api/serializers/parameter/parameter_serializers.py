@@ -17,7 +17,7 @@ class ParameterSerializer(serializers.ModelSerializer):
             'id', 'timestamp', 'ammonia', 'temperature', 'humidity',
             'ammonia_status', 'temperature_status', 'humidity_status',
             'ammonia_color', 'temperature_color', 'humidity_color',
-            'status', 'color', 'score'
+            'status', 'color', 'floor', 'score'
         ]
         read_only_fields = ['id', 'timestamp', 'status', 'color', 'score']
 
