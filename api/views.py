@@ -75,7 +75,7 @@ class ParameterListCreate(generics.ListCreateAPIView):
         time_range = self.request.query_params.get("time_range", None)
 
         if floor:
-            return Parameter.objects.filter(floor=floor) #jika floor diberi nilai kembalikan berdasarkan floor
+            queryset = queryset.filter(floor=floor)
         
         if time_range:
             #unit waktu (m = menit, h = jam, d = hari, mo = bulan)
@@ -184,11 +184,37 @@ class DataAyamHistoryList(generics.ListAPIView):
     queryset = DataAyamHistory.objects.all()
     serializer_class = DataAyamHistorySerializer
 
-    #def get_queryset(self):
-    #    pk = self.kwargs.get("pk")
-    #    if pk is None:
-    #        return DataAyamHistory.objects.none()
-    #    return DataAyamHistory.objects.filter(data_ayam_id = pk).order_by("-timestamp")
+    def get_queryset(self):
+        queryset = DataAyamHistory.objects.all()
+        time_range = self.request.query_params.get("time_range", None)
+
+        if time_range:
+            #unit waktu (m = menit, h = jam, d = hari, mo = bulan)
+            try:
+                if time_range.endswith("mo") : #bulan
+                    value = int(time_range[:-2])
+                    time_threshold = now() - timedelta(days = value * 30)
+                else:
+                    unit = time_range[-1]
+                    value = int(time_range[:-1])
+
+                    if unit == 'm': #menit
+                        time_threshold = now() - timedelta(minutes = value)
+                    elif unit == 'h': #jam
+                        time_threshold = now() - timedelta(hours = value)
+                    elif unit == 'd' : #hari
+                        time_threshold = now() - timedelta(days = value)
+            
+                    else:
+                        raise ValueError("Satuan waktu tidak valid")
+                
+                queryset = queryset.filter(timestamp__gte=time_threshold)
+                    
+            except (ValueError, TypeError):
+                raise ValidationError ({"error": "format time_range tidak valid"})
+                
+        return queryset
+   
     
 
 
@@ -199,8 +225,40 @@ class DataAyamHistoryDetail(generics.ListAPIView):
     serializer_class = DataAyamHistorySerializer
     def get_queryset(self):
         # Return all records with the given data_ayam_id
-        return DataAyamHistory.objects.filter(data_ayam_id=self.kwargs["pk"]).order_by("-timestamp")
+        pk = self.kwagrs.get("pk")
 
+        if not pk:
+            return DataAyamHistory.objects.none()
+        
+        queryset = DataAyamHistory.objects().filter(data_ayam_id=pk)
+        time_range = self.request.query_params.get('time_range', None)
+
+        if time_range:
+            #unit waktu (m = menit, h = jam, d = hari, mo = bulan)
+            try:
+                if time_range.endswith("mo") : #bulan
+                    value = int(time_range[:-2])
+                    time_threshold = now() - timedelta(days = value * 30)
+                else:
+                    unit = time_range[-1]
+                    value = int(time_range[:-1])
+
+                    if unit == 'm': #menit
+                        time_threshold = now() - timedelta(minutes = value)
+                    elif unit == 'h': #jam
+                        time_threshold = now() - timedelta(hours = value)
+                    elif unit == 'd' : #hari
+                        time_threshold = now() - timedelta(days = value)
+            
+                    else:
+                        raise ValueError("Satuan waktu tidak valid")
+                
+                queryset = queryset.filter(timestamp__gte=time_threshold)
+                    
+            except (ValueError, TypeError):
+                raise ValidationError ({"error": "format time_range tidak valid"})
+                
+        return queryset.order_by('-timestamps')
 
 
 
