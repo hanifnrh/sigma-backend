@@ -15,7 +15,7 @@ from .views import (
     RegisterView,
     AlatCreateUpdateView,
     AlatListView,
-    UpdateUserProfilePictureView
+    UserDetailView,
 )
 urlpatterns = [
     #path('api-token-auth/', obtain_auth_token, name='api_token_auth'), 
@@ -32,7 +32,7 @@ urlpatterns = [
     path('data-ayam/<int:pk>/history/', DataAyamHistoryDetail.as_view(), name='data-ayam-history'),
     path('register/', RegisterView.as_view(), name="register"),
     path('login/', LoginView.as_view(), name="login"),
+    path('user/profile/update/', UserDetailView.as_view(), name = 'update-profile' ),
     path('alat/', AlatCreateUpdateView().as_view(), name="alat-create-update"),
     path('alat/list/', AlatListView().as_view(), name="alat-list" ),
-    path('user/<int:id>/profile-picture', UpdateUserProfilePictureView.as_view(), name = 'update-profile-picture' ),
 ]

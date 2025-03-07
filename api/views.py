@@ -6,13 +6,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 
 from .models import Parameter, DataAyam, DataAyamHistory, CustomUser, Alat
 
 from .serializers.data_ayam_history.data_ayam_history_serializers import DataAyamHistorySerializer
 from .serializers.data_ayam.data_ayam_serializers import DataAyamSerializer
-from .serializers.user.user_serializers import UserRegisterSerializer, UserSerializer, ProfilePictureSerializer
+from .serializers.user.user_serializers import UserSerializer
 from .serializers.parameter.parameter_serializers import ParameterSerializer
 from .serializers.alat.alat_serializers import AlatSerializer
 from .permissions import IsAlatRole
@@ -35,33 +35,24 @@ class LoginView(APIView):
 
 class RegisterView(APIView):
     def post(self, request):
-        serializer = UserRegisterSerializer(data=request.data)
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             return Response({
                 'message': 'User created successfully!',
-                'user': {
-                    'id': user.id,
-                    'username': user.username,
-                    'email': user.email,
-                    'role': user.role
-                }
+                'user': UserSerializer(user).data
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UserDetailView(APIView):
+class UserDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
 
-    def get(self, request):
-        user = request.user
-        return Response(UserSerializer(user).data)
+    def get_object(self):
+        return self.request.user
 
-#update profile picture    
-class UpdateUserProfilePictureView(generics.UpdateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = ProfilePictureSerializer
-    permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]
+
 
 
 # List and Create Parameter
@@ -213,7 +204,7 @@ class DataAyamHistoryList(generics.ListAPIView):
             except (ValueError, TypeError):
                 raise ValidationError ({"error": "format time_range tidak valid"})
                 
-        return queryset
+        return queryset.order_by('-timestamp')
    
     
 
@@ -225,12 +216,12 @@ class DataAyamHistoryDetail(generics.ListAPIView):
     serializer_class = DataAyamHistorySerializer
     def get_queryset(self):
         # Return all records with the given data_ayam_id
-        pk = self.kwagrs.get("pk")
+        pk = self.kwargs.get("pk")
 
         if not pk:
             return DataAyamHistory.objects.none()
         
-        queryset = DataAyamHistory.objects().filter(data_ayam_id=pk)
+        queryset = DataAyamHistory.objects.filter(data_ayam_id=pk)
         time_range = self.request.query_params.get('time_range', None)
 
         if time_range:
@@ -258,7 +249,7 @@ class DataAyamHistoryDetail(generics.ListAPIView):
             except (ValueError, TypeError):
                 raise ValidationError ({"error": "format time_range tidak valid"})
                 
-        return queryset.order_by('-timestamps')
+        return queryset.order_by('-timestamp')
 
 
 

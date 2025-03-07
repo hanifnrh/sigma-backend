@@ -4,26 +4,16 @@ from api.models import CustomUser
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'role')
+        fields = ('id', 'username', 'email', 'role', 'password', 'profile_picture')
 
-class UserRegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
-    
-    class Meta:
-        model = CustomUser
-        fields = ['id', 'username', 'email', 'password', 'role']
-    
-    def validate(self, attrs):
-        role = attrs.get('role', 'staf')
-        email = attrs.get('email', None)
-
-        if role in ['staf', 'pemilik'] and not email:
-            raise serializers.ValidationError({"email": "staff dan pemilik harus memiliki email" })
-
-        return attrs
+        extra_kwargs = {
+            'password' : {'write_only': True},
+            'email' : {'required': False},
+            'profile_picture' : {'required': False}
+        }
     
     def create(self, validated_data):
-
+        #registrasi pengguna
         role = validated_data.get('role', 'staf')
 
         if role == 'alat':
@@ -33,14 +23,18 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         return user
     
-class ProfilePictureSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = CustomUser
-        fields = ['profile_picture']
-
     def update(self, instance, validated_data):
-        #handle profile picture update
-        instance.profile_picture = validated_data.get('profile_picture', instance.profile_picture)
+        #mengatur pembaruan profile dan pergantian password
+        
+        password = validated_data.pop('password', None)
+        
+        
+        for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+
+        if password:
+             instance.set_password(password)
+
         instance.save()
+
         return instance
