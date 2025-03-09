@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('SECRET_KEY','django-insecure-f=tk_oz*#z4a8%!#%h&j7p*xc2d
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = os.getenv('DEBUG', 'False') == 'True'
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['sigma-backend-production.up.railway.app','sigma-backend.railway.internal', 'sigma-media.railway.internal']
 

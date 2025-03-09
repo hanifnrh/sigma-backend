@@ -9,20 +9,28 @@ class DataAyamSerializer(serializers.ModelSerializer):
         fields = ['id', 'timestamp', 'tanggal_mulai', 'jumlah_ayam_awal', 'tanggal_panen', 'jumlah_ayam', 'mortalitas', 'usia_ayam']
 
 
-
-
-    def update(self, instance, validated_data):
+    def update(self, instance, validated_data): #fungsi untuk mengatur proses pembaruan data ayam
         #lacak nilai sebelumnya sebelum pembaruan
         original_data = {
             "jumlah_ayam" : instance.jumlah_ayam,
             "tanggal_panen": instance.tanggal_panen,
-            "usia_ayam": instance.usia_ayam
+            "usia_ayam": instance.usia_ayam,
         }
 
         #apply pembaruan ke instance (jangan disimpan dulu)
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+
+
+        #hitung mortalitas ayam, lakukan pengecekan untuk mencegah pembagian dengan nol
+
+        if instance.jumlah_ayam_awal > 0:
+            instance.mortalitas = 1 - (instance.jumlah_ayam_awal - instance.jumlah_ayam) / (instance.jumlah_ayam_awal)
+
+
+        
+
 
 
         #Simpan data lama untuk history
