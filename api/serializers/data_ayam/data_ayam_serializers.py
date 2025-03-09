@@ -26,7 +26,7 @@ class DataAyamSerializer(serializers.ModelSerializer):
         #hitung mortalitas ayam, lakukan pengecekan untuk mencegah pembagian dengan nol
 
         if instance.jumlah_ayam_awal > 0:
-            instance.mortalitas = 1 - (instance.jumlah_ayam_awal - instance.jumlah_ayam) / (instance.jumlah_ayam_awal)
+            instance.mortalitas = 1 - ((instance.jumlah_ayam_awal - instance.jumlah_ayam) / (instance.jumlah_ayam_awal))
 
 
         
