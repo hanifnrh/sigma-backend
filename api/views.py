@@ -16,10 +16,10 @@ from .serializers.user.user_serializers import UserSerializer
 from .serializers.parameter.parameter_serializers import ParameterSerializer
 from .serializers.alat.alat_serializers import AlatSerializer
 from .permissions import IsAlatRole
+from django.contrib.auth import authenticate
 
 class LoginView(APIView):
     def post(self, request):
-        from django.contrib.auth import authenticate
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(username=username, password=password)
@@ -28,7 +28,7 @@ class LoginView(APIView):
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-                'user': UserSerializer(user).data
+                'user' : UserSerializer(user).data
             })
         return Response({'error': 'Invalid credentials'}, status=400)
     
