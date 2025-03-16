@@ -4,6 +4,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+def redirect_to_site(request):
+    return("https://www.sigma-ta.com/")
+
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),  # Include api app URLs
