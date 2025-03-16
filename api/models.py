@@ -34,6 +34,9 @@ class CustomUser(AbstractUser):
         self.clean() #lakukan validasi sebelum menyimpan
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f"{self.name} - Role {self.role} - email {self.email}"
+
 #model untuk alat
 class Alat(models.Model):
     STATUS_CHOICES = [
@@ -43,6 +46,9 @@ class Alat(models.Model):
     alat_id = models.CharField(max_length = 255, unique = True)
     battery_level = models.FloatField()
     status = models.IntegerField(default = 0, choices=STATUS_CHOICES)
+
+    def __str__(self):
+        return f"{self.alat_id} - {self.battery_level} - {self.status}"
 
 #model untuk parameter
 class Parameter(models.Model):
@@ -196,6 +202,10 @@ class Parameter(models.Model):
             return "text-blue-500"
         else:
             return "text-green-500"
+        
+    def __str__(self):
+        return f"Stempel Waktu {self.timestamp} - {self.calculate_score} - {self.calculate_status}"
+    
 
 class DataAyam(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
