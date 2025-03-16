@@ -31,6 +31,15 @@ class CustomUser(AbstractUser):
             self.email = "" #pastikaan embedded system tidak perlu email
 
     def save(self, *args, **kwargs):
+
+        if self.role == 'pemilik': #Hanya pemilik yang memiliki role superuser dan staff yang bisa masuk ke halaman admin.
+            self.is_staff = True
+            self.is_superuser = True
+        else:
+            self.is_staff = False
+            self.is_superuser = False
+
+
         self.clean() #lakukan validasi sebelum menyimpan
         super().save(*args, **kwargs)
 
