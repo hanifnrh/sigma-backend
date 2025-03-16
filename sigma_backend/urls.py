@@ -2,10 +2,10 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
-from django.conf.urls.static import static
+from django.http import HttpResponseRedirect
 
 def redirect_to_site_login(request):
-    return("https://www.sigma-ta.com/")
+    return HttpResponseRedirect("https://www.sigma-ta.com/")
 
 
 
