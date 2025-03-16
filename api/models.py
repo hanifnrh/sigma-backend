@@ -204,7 +204,7 @@ class Parameter(models.Model):
             return "text-green-500"
         
     def __str__(self):
-        return f"Stempel Waktu {self.timestamp} - {self.calculate_score} - {self.calculate_status}"
+        return f"Stempel Waktu {self.timestamp} - {self.calculate_score()} - {self.calculate_status()}"
     
 
 class DataAyam(models.Model):
