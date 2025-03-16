@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Parameter, DataAyam, DataAyamHistory, CustomUser, Alat
 # Register your models here
-
+# Class admin digunakan untuk memperbaiki display model di django admin
 class ParameterAdmin(admin.ModelAdmin):
     
     class Meta:
