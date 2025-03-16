@@ -35,7 +35,7 @@ class CustomUser(AbstractUser):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name} - Role {self.role} - email {self.email}"
+        return f"{self.username} - Role {self.role} - email {self.email}"
 
 #model untuk alat
 class Alat(models.Model):
