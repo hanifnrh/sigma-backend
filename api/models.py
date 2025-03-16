@@ -242,7 +242,7 @@ class DataAyamHistory(models.Model):
     timestamp = models.DateTimeField(auto_now_add = True)  
 
     def __str__(self):
-        return f"History {self.data_ayam_id} - Jumlah Ayam: {self.jumlah_ayam}, Tanggal Panen: {self.tanggal_panen}"
+        return f"History {self.data_ayam_id} - Stempel Waktu {self.timestamp} - Jumlah Ayam: {self.jumlah_ayam}, Tanggal Panen: {self.tanggal_panen}"
     
 #create alat model here
 
