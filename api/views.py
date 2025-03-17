@@ -7,9 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
-
+from django.http import Http404
 from .models import Parameter, DataAyam, DataAyamHistory, CustomUser, Alat
-
 from .serializers.data_ayam_history.data_ayam_history_serializers import DataAyamHistorySerializer
 from .serializers.data_ayam.data_ayam_serializers import DataAyamSerializer
 from .serializers.user.user_serializers import UserSerializer
@@ -165,9 +164,12 @@ class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.errors, status = 400)
 
     def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.delete()
-        return Response({"message": " entry data ayam berhasil di hapus"}, status=204)
+        try:
+            instance = self.get_object()
+            instance.delete()
+            return Response({"message": " entry data ayam berhasil di hapus"}, status=204)
+        except Http404:
+            return Response({'error':'Data ayam tidak ditemukan'}, status=404)
 
 #List or create all
 class DataAyamHistoryList(generics.ListAPIView):
