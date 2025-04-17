@@ -9,11 +9,9 @@ class ParameterAdmin(admin.ModelAdmin):
         verbose_name_plural = 'Parameter'
 
 class AlatAdmin(admin.ModelAdmin):
-    
-    class Meta:
-        verbose_name = 'Alat'
-        verbose_name_plural = 'Alat'
-
+    readonly_fields = ('api_key',)
+    list_display = ('alat_id', 'battery_level', 'status', 'api_key')
+    fields = ('alat_id', 'battery_level', 'status', 'api_key')  # include api_key explicitly
 
 class DataAyamAdmin(admin.ModelAdmin):
     

@@ -39,8 +39,8 @@ class Alat(models.Model):
     api_key = models.CharField(max_length=64, unique=True, null=True, editable=False)
 
     def save(self, *args, **kwargs):
-        if not self.api_key:
-            self.api_ket = secrets.token_hex(32)
+        if not self.api_key or self.api_key is None:
+            self.api_key = secrets.token_hex(32)
         super().save(*args, **kwargs)
 
     def __str__(self):
