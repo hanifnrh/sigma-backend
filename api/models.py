@@ -40,11 +40,11 @@ class Alat(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.api_key:
-            self.api_ket = secrets.tokens_hex(32)
+            self.api_ket = secrets.token_hex(32)
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.alat_id} - {self.battery_level} - {self.status}"
+        return f"{self.alat_id} - {self.battery_level} - {self.status} - {self.api_key}"
 
 #model untuk parameter
 class Parameter(models.Model):
