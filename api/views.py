@@ -72,7 +72,7 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
 
 
 # View untuk mengirim data dari alat ke basis data
-class ParameterListCreate(generics.ListCreateAPIView):
+class ParameterList(generics.ListAPIView):
     authentication_classes = [AlatAPIKeyAuthentication]
     permission_classes = [IsAlat]
     serializer_class = ParameterSerializer
@@ -112,6 +112,12 @@ class ParameterListCreate(generics.ListCreateAPIView):
                 
         return queryset
     
+
+class ParameterCreate(generics.CreateAPIView):
+    authentication_classes = [AlatAPIKeyAuthentication]
+    permission_classes = [IsAlat]   
+    serializer_class = ParameterSerializer
+
     def perform_create(self, serializer):
         #memastikan nilai floor diambil dari url
         serializer.save(floor=self.kwargs.get("floor"))

@@ -3,7 +3,8 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import (
-    ParameterListCreate,
+    ParameterCreate,
+    ParameterList,
     ParameterDetail,
     ParameterListDelete,
     DataAyamListCreate,
@@ -21,10 +22,10 @@ from .views import (
 urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('parameters/', ParameterListCreate.as_view(), name='parameter-list-create'),
+    path('parameters/floor/<int:floor>/', ParameterList.as_view(), name="parameter-list-floor"),
     path('parameters/<int:pk>/', ParameterDetail.as_view(), name='parameter-detail'),
     path('parameters/delete/', ParameterListDelete().as_view(), name = "parameter-bulk-all-delete" ),
-    path('parameters/floor/<int:floor>/', ParameterListCreate.as_view(), name="parameters-list-create-floor"),
+    path('parameters/floor/<int:floor>/create/', ParameterCreate.as_view(), name="parameters-create-floor"),
     path('data-ayam/', DataAyamListCreate.as_view(), name='data-ayam-list-create'),
     path('data-ayam/<int:pk>/', DataAyamDetail.as_view(), name='data-ayam-detail'),
     path('data-ayam/delete/', DataAyamDelete.as_view(), name='data-ayam-bulk-all-delete' ),
