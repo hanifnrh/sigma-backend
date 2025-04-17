@@ -6,9 +6,9 @@ class AlatSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Alat
-        fields = ['alat_id', 'battery_level', 'status']
+        fields = ['alat_id', 'battery_level', 'status', 'api_key']
         extra_kwargs = {
-            'alat_id': {'validators': []} #try disabling this
+            'alat_id': {'validators': []} #Ini dimatikan untuk mencegah error
         }
 
     def validate_alat_id(self, value):

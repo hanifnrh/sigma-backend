@@ -2,7 +2,8 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-#User
+import secrets
+#Model untuk user
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
         ('staf', 'Staf'),
@@ -23,41 +24,24 @@ class CustomUser(AbstractUser):
         blank=True,
     )
 
-    def clean(self):
-        if self.role in ['staf', 'pemilik'] and not self.email:
-            raise ValidationError({"email": "staf dan pemilik harus memiliki email"})
-        
-        if self.role == "alat":
-            self.email = "" #pastikaan embedded system tidak perlu email
-
-    def save(self, *args, **kwargs):
-
-        if self.role == 'pemilik': #Hanya pemilik yang memiliki role superuser dan staff yang bisa masuk ke halaman admin.
-            self.is_staff = True
-            self.is_superuser = True
-        else:
-            self.is_staff = False
-            self.is_superuser = False
-
-
-        self.clean() #lakukan validasi sebelum menyimpan
-        super().save(*args, **kwargs)
-
     def __str__(self):
-
-        if self.role == 'alat':
-            return f"{self.username} - {self.role}"
         return f"{self.username} - {self.role} - {self.email}"
 
 #model untuk alat
 class Alat(models.Model):
     STATUS_CHOICES = [
-        (0, 'Aktif'),
-        (1, 'Nonaktif')
+        (0, 'Nonaktif'),
+        (1, 'Aktif')
     ]
     alat_id = models.CharField(max_length = 255, unique = True)
     battery_level = models.FloatField()
     status = models.IntegerField(default = 0, choices=STATUS_CHOICES)
+    api_key = models.CharField(max_length=64, unique=True, null=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        if not self.api_key:
+            self.api_ket = secrets.tokens_hex(32)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.alat_id} - {self.battery_level} - {self.status}"

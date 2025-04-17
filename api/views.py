@@ -14,10 +14,11 @@ from .serializers.data_ayam.data_ayam_serializers import DataAyamSerializer
 from .serializers.user.user_serializers import UserSerializer
 from .serializers.parameter.parameter_serializers import ParameterSerializer
 from .serializers.alat.alat_serializers import AlatSerializer
-from .permissions import IsAlatRole
+from .permissions import IsAlat
+from .authentications import AlatAPIKeyAuthentication
 from django.contrib.auth import authenticate
 
-class LoginView(APIView):
+class UserLoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -30,7 +31,23 @@ class LoginView(APIView):
                 'user' : UserSerializer(user).data
             })
         return Response({'error': 'Invalid credentials'}, status=400)
-    
+
+class AlatLoginView(APIView):
+    def post(self, request, *args, **kwargs):
+        api_key = request.data.get('api_key')
+        if not api_key:
+            return Response({"message": "API key diperlukan"})
+        
+        try:
+            alat = Alat.objects.get(api_key=api_key)
+            return Response({''
+            "message": "alat berhasil login",
+            "alat_id": alat.alat_id})
+        except Alat.DoesNotExist:
+            return Response({
+                "message": "API Key tidak valid"
+            })
+            
 
 class RegisterView(APIView):
     def post(self, request):
@@ -164,7 +181,7 @@ class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.errors, status = 400)
 
     def delete(self, request, *args, **kwargs):
-        try:
+        try: #try catch untuk mencegah 500 error apabila tidak ada data yang dapat dihapus
             instance = self.get_object()
             instance.delete()
             return Response({"message": " entry data ayam berhasil di hapus"}, status=204)
@@ -255,46 +272,47 @@ class DataAyamHistoryDetail(generics.ListAPIView):
 
 
 
-class CommandView(APIView):
-    #API untuk mengirim perinah
-    permission_classes = [IsAuthenticated]
+# class CommandView(APIView):
+#     #API untuk mengirim perinah
+#     permission_classes = [IsAuthenticated]
     
-    def get(self, request):
-        #method untuk esp32 meminta perintah
-        #Hanya entitas pengguna dengan role "alat" yang bisa menggunakan API view ini
-        if request.user.role.lower() != 'alat':
-            return Response({"error": "Akses tidak diizinkan kecuali untuk alat"})
-        else:
-            command = cache.get(f"esp32_command_{request.user.id}", None)
-            return Response({"command": command})
+#     def get(self, request):
+#         #method untuk esp32 meminta perintah
+#         #Hanya entitas pengguna dengan role "alat" yang bisa menggunakan API view ini
+#         if request.user.role.lower() != 'alat':
+#             return Response({"error": "Akses tidak diizinkan kecuali untuk alat"})
+#         else:
+#             command = cache.get(f"esp32_command_{request.user.id}", None)
+#             return Response({"command": command})
 
-    def post(self, request):
-        #Only authorized commands to esp32
+#     def post(self, request):
+#         #Only authorized commands to esp32
 
-        if request.user.role.lower() not in ["pemilik", "staf"]:
-            return Response({"error": "Hanya pemilik atau staff yang dapat mengirim perintah"})
+#         if request.user.role.lower() not in ["pemilik", "staf"]:
+#             return Response({"error": "Hanya pemilik atau staff yang dapat mengirim perintah"})
         
-        user_id = request.data.get("user_id")
-        command = request.data.get("command")
+#         user_id = request.data.get("user_id")
+#         command = request.data.get("command")
 
-        #Validate user ID
+#         #Validate user ID
 
-        try:
-            alat = CustomUser.objects.get(id=user_id, role_iexact="alat")
+#         try:
+#             alat = CustomUser.objects.get(id=user_id, role_iexact="alat")
 
-        except CustomUser.DoesNotExist:
-            return Response({"error": "alat tidak ditemukan"}, status=404)
+#         except CustomUser.DoesNotExist:
+#             return Response({"error": "alat tidak ditemukan"}, status=404)
 
-        if command not in ["wake", "sleep"]:
-            return Response({"error": "Perintah tidak valid, gunakan 'wake' atau 'sleep'"})
+#         if command not in ["wake", "sleep"]:
+#             return Response({"error": "Perintah tidak valid, gunakan 'wake' atau 'sleep'"})
     
-        #Store command in cache
-        cache.set(f"esp32_command_{alat.id}", command, timeout=300) #simpan buat 5 menit
+#         #Store command in cache
+#         cache.set(f"esp32_command_{alat.id}", command, timeout=300) #simpan buat 5 menit
 
-        return Response({"message": f"Perintah '{command}' dikirim ke {alat.username}"})
+#         return Response({"message": f"Perintah '{command}' dikirim ke {alat.username}"})
     
 class AlatCreateUpdateView(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated, IsAlatRole]
+    authentication_classes = [AlatAPIKeyAuthentication]
+    permission_classes = [IsAuthenticated, IsAlat]
     serializer_class = AlatSerializer
 
 class AlatListView(generics.ListAPIView):

@@ -6,18 +6,10 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ('id', 'username', 'email', 'role', 'password', 'profile_picture')
 
-        extra_kwargs = {
-            'password' : {'write_only': True},
-            'email' : {'required': False},
-            'profile_picture' : {'required': False}
-        }
     
     def create(self, validated_data):
         #registrasi pengguna
         role = validated_data.get('role', 'staf')
-
-        if role == 'alat':
-            validated_data.pop('email', None)
 
         user = CustomUser.objects.create_user(**validated_data)
 
@@ -27,7 +19,6 @@ class UserSerializer(serializers.ModelSerializer):
         #mengatur pembaruan profile dan pergantian password
         
         password = validated_data.pop('password', None)
-        
         
         for attr, value in validated_data.items():
                 setattr(instance, attr, value)
