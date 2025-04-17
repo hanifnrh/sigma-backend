@@ -4,7 +4,7 @@ from .models import Alat
 
 class AlatAPIKeyAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        api_key = request.header.get('X-API-Key')
+        api_key = request.headers.get('X-API-Key')
 
         if not api_key:
             return None

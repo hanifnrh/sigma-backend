@@ -34,7 +34,7 @@ class UserLoginView(APIView):
 
 class AlatLoginView(APIView):
     def post(self, request, *args, **kwargs):
-        api_key = request.data.get('api_key')
+        api_key = request.headers.get('X-API-Key')
         if not api_key:
             return Response({"message": "API key diperlukan"})
         
