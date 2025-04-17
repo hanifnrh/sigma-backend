@@ -71,9 +71,10 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
 
 
 
-# List and Create Parameter
+# View untuk mengirim data dari alat ke basis data
 class ParameterListCreate(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [AlatAPIKeyAuthentication]
+    permission_classes = [IsAlat]
     serializer_class = ParameterSerializer
 
     def get_queryset(self):

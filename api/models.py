@@ -44,7 +44,7 @@ class Alat(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.alat_id} - {self.battery_level} - {self.status} - {self.api_key}"
+        return f"{self.alat_id}"
 
 #model untuk parameter
 class Parameter(models.Model):
