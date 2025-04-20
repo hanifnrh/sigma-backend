@@ -10,8 +10,19 @@ class CustomUser(AbstractUser):
         ('pemilik', 'Pemilik'),
         ('alat', 'Alat'),
     ]
+    PROFILE_PICTURE_CHOICES = [
+        (1, "PP1"),
+        (2, "PP2"),
+        (3, "PP3"),
+        (4, "PP4"),
+        (5, "PP5"),
+    ]
+
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='staf')
-    profile_picture = models.ImageField(upload_to="profile_pictures/", null = True, blank = True)
+    profile_picture = models.IntegerField(choices=PROFILE_PICTURE_CHOICES, default = 1)
+    first_name = None
+    last_name = None
+    full_name = models.CharField(max_length = 30, null = True)
 
     groups = models.ManyToManyField(
         Group,
