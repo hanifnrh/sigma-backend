@@ -22,6 +22,7 @@ from .views import (
 urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('parameters/all/', ParameterList.as_view(), name='parameter-list-all'),
     path('parameters/floor/<int:floor>/', ParameterList.as_view(), name="parameter-list-floor"),
     path('parameters/<int:pk>/', ParameterDetail.as_view(), name='parameter-detail'),
     path('parameters/delete/', ParameterListDelete().as_view(), name = "parameter-bulk-all-delete" ),

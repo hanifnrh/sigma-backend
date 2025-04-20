@@ -71,10 +71,9 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
 
 
 
-# View untuk mengirim data dari alat ke basis data
+# View untuk menampilkan daftar alat
 class ParameterList(generics.ListAPIView):
-    authentication_classes = [AlatAPIKeyAuthentication]
-    permission_classes = [IsAlat]
+    permission_classes = [IsAuthenticated]
     serializer_class = ParameterSerializer
 
     def get_queryset(self):
