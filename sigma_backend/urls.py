@@ -13,4 +13,5 @@ urlpatterns = [
     path('', redirect_to_site_login),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),  # Include api app URLs
+    path('__debug__/', include('debug_toolbar.urls'))
 ] 

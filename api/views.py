@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from django.http import Http404
 from .models import Parameter, DataAyam, DataAyamHistory, CustomUser, Alat
@@ -18,19 +19,53 @@ from .permissions import IsAlat
 from .authentications import AlatAPIKeyAuthentication
 from django.contrib.auth import authenticate
 
-class UserLoginView(APIView):
+class UserLoginView(GenericAPIView):
+    serializer_class = UserSerializer
+
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+
+        # Check if user data is in the cache
+        cached_user_data = cache.get(f'user_data_{username}')
+        if cached_user_data:
+            # If the data is cached, authenticate with provided credentials
+            user = authenticate(username=username, password=password)
+            if user:
+                # User authenticated, return tokens and cached user data
+                refresh = RefreshToken.for_user(user)
+                return Response({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                    'user': cached_user_data
+                })
+
+        # If no cache, authenticate normally
         user = authenticate(username=username, password=password)
         if user:
+            # Serialize user data and store it in the cache
+
+            if user.role == 'tamu' and not user.is_approved:
+                return Response({'error':'Akun anda belum di approve'})
+
+            user_data = self.get_serializer(user, fields = ['username', 'profile_picture', 'email']).data
+            cache.set(f'user_data_{username}', user_data, timeout=300)
+
+            # Generate and return refresh and access tokens
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-                'user' : UserSerializer(user).data
+                'user': user_data
             })
-        return Response({'error': 'Invalid credentials'}, status=400)
+
+        # Return an error if credentials are invalid
+        return Response({'error': 'Credential tidak valid'}, status=400)
+
+            
+      
+
+
 
 class AlatLoginView(APIView):
     def post(self, request, *args, **kwargs):
@@ -133,7 +168,7 @@ class ParameterListDelete(APIView):
             Parameter.objects.filter(id__in=param_ids).delete()
             return Response({"message" : f"Berhasil menghapus {deleted_count} parameter"}, status = 200)
         
-        #delete all if no specific ids provded
+        #hapus semua jika tidak ada ids dalam request body
         deleted_count = Parameter.objects.count()
         Parameter.objects.all().delete()
 
@@ -163,13 +198,13 @@ class DataAyamDelete(APIView):
             DataAyam.objects.filter(id__in=param_ids).delete()
             return Response({"message" : f"Berhasil menghapus {deleted_count} data ayam"}, status = 200)
         
-        #delete all if no specific ids provded
+        #hapus semua jika tidak ada ids dalam request body
         deleted_count = DataAyam.objects.all().count()
         DataAyam.objects.all().delete()
 
         return Response({"message": f"Berhasil menghapus semua {deleted_count} data ayam"}, status = 200)
 
-# Retrieve, Update, and Delete specific DataAyam
+# Retrieve, Update, dan Delete DataAyam spesifik
 class DataAyamDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = DataAyam.objects.all()
@@ -318,7 +353,7 @@ class DataAyamHistoryDetail(generics.ListAPIView):
     
 class AlatCreateUpdateView(generics.CreateAPIView):
     authentication_classes = [AlatAPIKeyAuthentication]
-    permission_classes = [IsAuthenticated, IsAlat]
+    permission_classes = [IsAlat]
     serializer_class = AlatSerializer
 
 class AlatListView(generics.ListAPIView):

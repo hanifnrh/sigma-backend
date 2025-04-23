@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
     ROLE_CHOICES = [
         ('staf', 'Staf'),
         ('pemilik', 'Pemilik'),
-        ('alat', 'Alat'),
+        ('tamu', 'Tamu'),
     ]
     PROFILE_PICTURE_CHOICES = [
         (1, "PP1"),
@@ -17,24 +17,19 @@ class CustomUser(AbstractUser):
         (4, "PP4"),
         (5, "PP5"),
     ]
-
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='staf')
+    username = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(unique=True, db_index=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='tamu')
     profile_picture = models.IntegerField(choices=PROFILE_PICTURE_CHOICES, default = 1)
     first_name = None
     last_name = None
-    full_name = models.CharField(max_length = 30, null = True)
+    full_name = models.CharField(max_length = 30, null = True, verbose_name="Nama lengkap")
+    is_approved = models.BooleanField(default = False, verbose_name="Sudah di approve pemilik?")
+    @property
+    def is_staff(self):
 
-    groups = models.ManyToManyField(
-        Group,
-        related_name='customuser_groups',  # Tambahkan related_name untuk menghindari konflik
-        blank=True,
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name='customuser_permissions',  # Tambahkan related_name untuk menghindari konflik
-        blank=True,
-    )
-
+        return self.is_superuser
+    
     def __str__(self):
         return f"{self.username} - {self.role} - {self.email}"
 

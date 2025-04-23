@@ -36,6 +36,16 @@ class UserAdmin(admin.ModelAdmin):
     class Meta:
         verbose_name = 'Pengguna'
         verbose_name_plural = 'Pengguna'
+    list_display = ('username', 'email', 'role', 'is_approved', 'profile_picture')
+    list_filter = ('role', 'is_approved')
+
+    actions = ['approve_pengguna', 'cabut_approval_pengguna']
+
+    def approve_pengguna(self, request, queryset):
+        queryset.update(is_approved=True, role = 'staff') #Ganti role ke staff ketika approve
+    
+    def cabut_approval_pengguna(self, request, queryset):
+        queryset.update(is_approved=False, role = 'tamu') #Ganti role ke tamu jika mencabut approval
 
 
 

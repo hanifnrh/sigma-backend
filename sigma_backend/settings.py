@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY','django-insecure-f=tk_oz*#z4a8%!#%h&j7p*xc2d
 # DEBUG = os.getenv('DEBUG', 'False') == 'True'
 DEBUG = True
 
-ALLOWED_HOSTS = ['sigma-backend-production.up.railway.app','sigma-backend.railway.internal', 'sigma-media.railway.internal']
+ALLOWED_HOSTS = ['sigma-backend-production.up.railway.app','sigma-backend.railway.internal', 'sigma-media.railway.internal', 'localhost', '127.0.0.1']
 
 AUTH_USER_MODEL = 'api.CustomUser'
 
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'api',
     'corsheaders',
     'rest_framework.authtoken',
+    'debug_toolbar',
 ]
 
 REST_FRAMEWORK = {
@@ -64,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware'
 ]
 
 CSRF_TRUSTED_ORIGINS = ["https://sigma-backend-production.up.railway.app"]
