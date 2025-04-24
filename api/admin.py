@@ -36,7 +36,7 @@ class UserAdmin(admin.ModelAdmin):
     class Meta:
         verbose_name = 'Pengguna'
         verbose_name_plural = 'Pengguna'
-    list_display = ('username', 'email', 'role', 'is_approved', 'profile_picture')
+    list_display = ('full_name', 'username', 'email', 'role', 'is_approved', 'profile_picture')
     list_filter = ('role', 'is_approved')
 
     actions = ['approve_pengguna', 'cabut_approval_pengguna']

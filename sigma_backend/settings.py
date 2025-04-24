@@ -46,12 +46,13 @@ INSTALLED_APPS = [
     'api',
     'corsheaders',
     'rest_framework.authtoken',
-    'debug_toolbar',
+    
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'api.authentications.AlatAPIKeyAuthentication',
     ),
 }
 
@@ -65,7 +66,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware'
+    
 ]
 
 CSRF_TRUSTED_ORIGINS = ["https://sigma-backend-production.up.railway.app"]
