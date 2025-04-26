@@ -48,7 +48,7 @@ class UserLoginView(GenericAPIView):
             if user.role == 'tamu' and not user.is_approved:
                 return Response({'error':'Akun anda belum di approve'})
 
-            user_data = self.get_serializer(user, fields = ['username', 'profile_picture', 'email']).data
+            user_data = self.get_serializer(user, fields = ['username', 'profile_picture', 'email', 'role']).data
             cache.set(f'user_data_{username}', user_data, timeout=300)
 
             # Generate and return refresh and access tokens
