@@ -32,6 +32,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['sigma-backend-production.up.railway.app','sigma-backend.railway.internal', 'sigma-media.railway.internal', 'localhost', '127.0.0.1']
 
 AUTH_USER_MODEL = 'api.CustomUser'
+#CORS_ALLOW_ALL_ORIGINS = True
+
 
 # Application definition
 
@@ -46,7 +48,6 @@ INSTALLED_APPS = [
     'api',
     'corsheaders',
     'rest_framework.authtoken',
-    
 ]
 
 REST_FRAMEWORK = {

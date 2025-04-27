@@ -35,7 +35,7 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name="register"),
     path('login/', UserLoginView.as_view(), name="login"),
     path('user/profile/update/', UserDetailView.as_view(), name = 'update-profile'),
-    path('alat/login/', AlatLoginView().as_view(), name = 'alat-login' ),
+    path('alat/login/', AlatLoginView().as_view(), name = 'alat-login' ), 
     path('alat/', AlatCreateUpdateView().as_view(), name="alat-create-update"),
     path('alat/list/', AlatListView().as_view(), name="alat-list" ),
 ]

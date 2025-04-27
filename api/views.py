@@ -26,13 +26,13 @@ class UserLoginView(GenericAPIView):
         username = request.data.get('username')
         password = request.data.get('password')
 
-        # Check if user data is in the cache
+        # periksa apakah user data dalam cache
         cached_user_data = cache.get(f'user_data_{username}')
         if cached_user_data:
-            # If the data is cached, authenticate with provided credentials
+            # jika cached, lakukan otentikasi dengan credentials yang diberikan
             user = authenticate(username=username, password=password)
             if user:
-                # User authenticated, return tokens and cached user data
+                # otentikasi berhasil, berikan token dan data user
                 refresh = RefreshToken.for_user(user)
                 return Response({
                     'refresh': str(refresh),
@@ -43,12 +43,12 @@ class UserLoginView(GenericAPIView):
         # If no cache, authenticate normally
         user = authenticate(username=username, password=password)
         if user:
-            # Serialize user data and store it in the cache
+            # Serialkan data user dan simpan dalam cache
 
             if user.role == 'tamu' and not user.is_approved:
                 return Response({'error':'Akun anda belum di approve'})
 
-            user_data = self.get_serializer(user, fields = ['username', 'profile_picture', 'email']).data
+            user_data = self.get_serializer(user, fields = ['username', 'profile_picture', 'email', 'role']).data
             cache.set(f'user_data_{username}', user_data, timeout=300)
 
             # Generate and return refresh and access tokens
@@ -95,6 +95,7 @@ class RegisterView(APIView):
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+#View untuk update profile
 class UserDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
