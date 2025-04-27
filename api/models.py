@@ -25,10 +25,18 @@ class CustomUser(AbstractUser):
     last_name = None
     full_name = models.CharField(max_length = 30, null = True, verbose_name="Nama lengkap")
     is_approved = models.BooleanField(default = False, verbose_name="Sudah di approve pemilik?")
-    @property
-    def is_staff(self):
+    
 
-        return self.is_superuser
+    def save(self, *args, **kwargs):
+        if self.role == 'pemilik':
+            self.is_staff = True
+            self.is_superuser = True
+        else:
+            self.is_staff = False
+            self.is_superuser = False
+
+        super().save(*args, **kwargs)
+
     
     def __str__(self):
         return f"{self.username} - {self.role} - {self.email}"
