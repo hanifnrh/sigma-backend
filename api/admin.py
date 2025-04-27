@@ -11,7 +11,7 @@ class ParameterAdmin(admin.ModelAdmin):
 class AlatAdmin(admin.ModelAdmin):
     readonly_fields = ('api_key',)
     list_display = ('alat_id', 'battery_level', 'status', 'api_key')
-    fields = ('alat_id', 'battery_level', 'status', 'api_key')  # include api_key explicitly
+    fields = ('alat_id', 'battery_level', 'status', 'api_key')  # secara eksplisit tampilkan API key
 
 class DataAyamAdmin(admin.ModelAdmin):
     

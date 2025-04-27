@@ -21,22 +21,10 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True, db_index=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='tamu')
     profile_picture = models.IntegerField(choices=PROFILE_PICTURE_CHOICES, default = 1)
-    first_name = None
+    first_name = None #orang indonesia tidak mempunyai first name dan last name
     last_name = None
     full_name = models.CharField(max_length = 30, null = True, verbose_name="Nama lengkap")
     is_approved = models.BooleanField(default = False, verbose_name="Sudah di approve pemilik?")
-    
-
-    def save(self, *args, **kwargs):
-        if self.role == 'pemilik':
-            self.is_staff = True
-            self.is_superuser = True
-        else:
-            self.is_staff = False
-            self.is_superuser = False
-
-        super().save(*args, **kwargs)
-
     
     def __str__(self):
         return f"{self.username} - {self.role} - {self.email}"
