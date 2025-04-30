@@ -37,7 +37,7 @@ class Alat(models.Model):
     ]
     alat_id = models.CharField(max_length = 255, unique = True)
     battery_level = models.FloatField()
-    status = models.IntegerField(default = 0, choices=STATUS_CHOICES)
+    # status = models.IntegerField(default = 0, choices=STATUS_CHOICES)
     api_key = models.CharField(max_length=64, unique=True, null=True, editable=False)
 
     def save(self, *args, **kwargs):
@@ -62,7 +62,7 @@ class Parameter(models.Model):
     score = models.FloatField(null=True, blank=True)
     status = models.CharField(max_length=50, null=True, blank=True, default="Error")
 
-    def calculate_score(self):
+    def calculate_score(self): #Hitung skor ammonia dan kelembapan
         THRESHOLDS = {
             "ammonia": {"optimal": 20, "good": 25, "bad": 30},
             "temperature": {
