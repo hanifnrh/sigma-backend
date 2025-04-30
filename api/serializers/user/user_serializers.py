@@ -24,8 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         #registrasi pengguna
-        #Paksa role ke tamu dalam request body
-        validated_data['role'] = 'tamu'
+        #validated_data['role'] = 'tamu'
         user = CustomUser.objects.create_user(**validated_data)
         return user
     
