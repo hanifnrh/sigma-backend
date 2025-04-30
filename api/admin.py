@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.hashers import make_password
 from .models import Parameter, DataAyam, DataAyamHistory, CustomUser, Alat
 # Register your models here
 # Class admin digunakan untuk memperbaiki display model di django admin
@@ -38,15 +39,17 @@ class UserAdmin(admin.ModelAdmin):
         verbose_name_plural = 'Pengguna'
     list_display = ('full_name', 'username', 'email', 'role', 'is_approved', 'profile_picture')
     list_filter = ('role', 'is_approved')
+    readonly_fields = ('password',)
 
     actions = ['approve_pengguna', 'cabut_approval_pengguna']
 
     def approve_pengguna(self, request, queryset):
-        queryset.update(is_approved=True, role = 'staff') #Ganti role ke staff ketika approve
+        queryset.update(is_approved=True) #Ganti role ke staff ketika approve
     
     def cabut_approval_pengguna(self, request, queryset):
-        queryset.update(is_approved=False, role = 'tamu') #Ganti role ke tamu jika mencabut approval
+        queryset.update(is_approved=False) #Ganti role ke tamu jika mencabut approval
 
+    
 
 
 admin.site.register(Parameter, ParameterAdmin)

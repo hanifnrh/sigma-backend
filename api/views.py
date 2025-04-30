@@ -66,7 +66,7 @@ class UserLoginView(GenericAPIView):
       
 
 
-
+#Class untuk pengujian otentikasi API Key
 class AlatLoginView(APIView):
     def post(self, request, *args, **kwargs):
         api_key = request.headers.get('X-API-Key')
