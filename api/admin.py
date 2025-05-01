@@ -50,7 +50,7 @@ class UserAdmin(admin.ModelAdmin):
         queryset.update(is_approved=False) #Cabut approval
 
     def save_model(self, request, obj, form, change):
-        if 'password' in form.changed_data:
+        if 'password' in form.changed_data: #hash password sebelum kirim ke basis data supaya bekerja dengan sistem otentikasi.
             obj.set_password(obj.password)
         obj.save()
 
