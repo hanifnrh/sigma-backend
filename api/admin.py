@@ -24,7 +24,6 @@ class ParameterAdmin(admin.ModelAdmin):
         'floor',
         'score',
         'status',
-        'colored_status',
     )
     list_filter = ('floor', 'status')
     ordering = ('-timestamp',)
@@ -47,14 +46,14 @@ class DataAyamAdmin(admin.ModelAdmin):
 
 class DataAyamHistoryAdmin(admin.ModelAdmin):
     list_display = (
-        'data_ayam',
+        'timestamp',
         'jumlah_ayam_awal',
         'tanggal_mulai',
         'tanggal_panen',
         'jumlah_ayam',
         'mortalitas',
         'usia_ayam',
-        'timestamp',
+        
     )
     list_filter = ('tanggal_mulai', 'tanggal_panen')
     ordering = ('-timestamp',)
