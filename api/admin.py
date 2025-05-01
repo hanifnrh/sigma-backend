@@ -14,23 +14,50 @@ class AlatAdmin(admin.ModelAdmin):
     list_display = ('alat_id', 'battery_level', 'api_key')
     fields = ('alat_id', 'battery_level', 'status', 'api_key')  # secara eksplisit tampilkan API key
 
-class DataAyamAdmin(admin.ModelAdmin):
-    
-    class Meta:
-        verbose_name = 'Data ayam'
-        verbose_name_plural = 'Data ayam'
+
+class ParameterAdmin(admin.ModelAdmin):
+    list_display = (
+        'timestamp',
+        'ammonia',
+        'temperature',
+        'humidity',
+        'floor',
+        'score',
+        'status',
+        'colored_status',
+    )
+    list_filter = ('floor', 'status')
+    ordering = ('-timestamp',)
+
+
 
 class DataAyamAdmin(admin.ModelAdmin):
-    
-    class Meta:
-        verbose_name = 'Data ayam'
-        verbose_name_plural = 'Data ayam'
+    list_display = (
+        'timestamp',
+        'jumlah_ayam_awal',
+        'tanggal_mulai',
+        'tanggal_panen',
+        'jumlah_ayam',
+        'mortalitas',
+        'usia_ayam',
+    )
+    list_filter = ('tanggal_mulai', 'tanggal_panen')
+    ordering = ('-timestamp',)
+
 
 class DataAyamHistoryAdmin(admin.ModelAdmin):
-
-    class Meta:
-        verbose_name = 'Riwayat data ayam'
-        verbose_name_plural = 'Riwayat data ayam'
+    list_display = (
+        'data_ayam',
+        'jumlah_ayam_awal',
+        'tanggal_mulai',
+        'tanggal_panen',
+        'jumlah_ayam',
+        'mortalitas',
+        'usia_ayam',
+        'timestamp',
+    )
+    list_filter = ('tanggal_mulai', 'tanggal_panen')
+    ordering = ('-timestamp',)
 
 class UserAdmin(admin.ModelAdmin):
 
