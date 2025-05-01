@@ -107,7 +107,7 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
 
 
 
-# View untuk menampilkan daftar alat
+# View untuk menampilkan daftar parameter
 class ParameterList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ParameterSerializer
@@ -147,7 +147,7 @@ class ParameterList(generics.ListAPIView):
                 
         return queryset
     
-
+#View untuk menambahkan data parameter
 class ParameterCreate(generics.CreateAPIView):
     authentication_classes = [AlatAPIKeyAuthentication]
     permission_classes = [IsAlat]   
@@ -157,7 +157,7 @@ class ParameterCreate(generics.CreateAPIView):
         #memastikan nilai floor diambil dari url
         serializer.save(floor=self.kwargs.get("floor"))
 
-# Bulk or delete all
+# Bulk or delete all data parameter
 class ParameterListDelete(APIView):
     permission_classes = [IsAuthenticated]
     

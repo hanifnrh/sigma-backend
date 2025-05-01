@@ -39,15 +39,20 @@ class UserAdmin(admin.ModelAdmin):
         verbose_name_plural = 'Pengguna'
     list_display = ('full_name', 'username', 'email', 'role', 'is_approved', 'profile_picture')
     list_filter = ('role', 'is_approved')
-    readonly_fields = ('password',)
+    
 
     actions = ['approve_pengguna', 'cabut_approval_pengguna']
 
     def approve_pengguna(self, request, queryset):
-        queryset.update(is_approved=True) #Ganti role ke staff ketika approve
+        queryset.update(is_approved=True) #Berikan approval
     
     def cabut_approval_pengguna(self, request, queryset):
-        queryset.update(is_approved=False) #Ganti role ke tamu jika mencabut approval
+        queryset.update(is_approved=False) #Cabut approval
+
+    def save_model(self, request, obj, form, change):
+        if 'password' in form.changed_data:
+            obj.set_password(obj.password)
+        obj.save()
 
     
 

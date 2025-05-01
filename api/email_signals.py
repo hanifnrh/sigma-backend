@@ -13,7 +13,7 @@ def send_email_alert(sender, instance, created, **kwargs):
         recipiets = list(filter(None, recipients))
 
         if recipients:
-            floor = dict(Parameter.Floor_CHOICES).get(instance.floor, "Floor tidak diketahui")
+            floor = dict(Parameter.FLOOR_CHOICES).get(instance.floor, "Floor tidak diketahui")
 
             send_mail(
                 subject=f"PERHATIAN! LEVEL PARAMETER KANDANG DALAM BAHAYA",
