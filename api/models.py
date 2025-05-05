@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.utils import timezone
-from django.core.exceptions import ValidationError
 import secrets
 #Model untuk user
 class CustomUser(AbstractUser):
@@ -51,8 +50,8 @@ class Alat(models.Model):
 #model untuk parameter
 class Parameter(models.Model):
     FLOOR_CHOICES = [
-        (1, "first floor"),
-        (2, "second floor"),
+        (1, "Lantai 1"),
+        (2, "Lantai 2"),
     ]
     timestamp = models.DateTimeField(auto_now_add=True)
     ammonia = models.FloatField()

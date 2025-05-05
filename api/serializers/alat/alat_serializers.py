@@ -6,7 +6,7 @@ class AlatSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Alat
-        fields = ['alat_id', 'battery_level', 'status', 'api_key']
+        fields = ['alat_id', 'battery_level', 'api_key']
         extra_kwargs = {
             'alat_id': {'validators': []} #Ini dimatikan untuk mencegah error
         }
@@ -21,7 +21,6 @@ class AlatSerializer(serializers.ModelSerializer):
         alat, _ = Alat.objects.update_or_create(
             alat_id = validated_data["alat_id"],
             defaults = {
-                "status": validated_data["status"],
                 "battery_level": validated_data["battery_level"]
             }
         )

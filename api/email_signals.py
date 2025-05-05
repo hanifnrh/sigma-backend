@@ -18,7 +18,7 @@ def send_email_alert(sender, instance, created, **kwargs):
             send_mail(
                 subject=f"PERHATIAN! LEVEL PARAMETER KANDANG DALAM BAHAYA",
                 message = (
-                    f"Parameter berikut telah mencapai level bahaya di lantai {floor}\n\n"
+                    f"Parameter berikut telah mencapai level bahaya di {floor}\n\n"
                     f"Ammonia: {instance.ammonia} (Status: {'Bahaya' if instance.ammonia > 30 else 'Tidak dalam bahaya'})\n\n"
                     f"Temperatur: {instance.temperature} derajat celcius (Status: {'Bahaya' if instance.temperature < 18 or instance.temperature > 36 else 'Tidak dalam bahaya' })\n\n"
                     f"Kelembapan: {instance.humidity}% (Status: {'Bahaya' if instance.humidity < 58 or instance.humidity > 72 else 'Not Bahaya'})\n\n"
