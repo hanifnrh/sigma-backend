@@ -21,6 +21,17 @@ class ParameterSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'timestamp', 'status', 'color', 'score']
 
+    def get_ammonia_status(self, obj):
+        
+        return obj.get_ammonia_status()
+
+    def get_temperature_status(self, obj):
+        
+        return obj.get_temperature_status()
+
+    def get_humidity_status(self, obj):
+        
+        return obj.get_humidity_status()
         
     def get_ammonia_color(self, obj):
         return obj.get_ammonia_color()

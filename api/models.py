@@ -30,13 +30,7 @@ class CustomUser(AbstractUser):
 
 #model untuk alat
 class Alat(models.Model):
-    STATUS_CHOICES = [
-        (0, 'Nonaktif'),
-        (1, 'Aktif')
-    ]
     alat_id = models.CharField(max_length = 255, unique = True)
-    battery_level = models.FloatField()
-    # status = models.IntegerField(default = 0, choices=STATUS_CHOICES)
     api_key = models.CharField(max_length=64, unique=True, null=True, editable=False)
 
     def save(self, *args, **kwargs):
@@ -112,40 +106,17 @@ class Parameter(models.Model):
 
         return (ammonia_score + temperature_score + humidity_score) / 3
 
-    def calculate_status(self):
-        status_values = []
+    def calculate_status(self): #Cek status secara umum
+        status_values = [
+            self.get_ammonia_status(),
+            self.get_humidity_status(),
+            self.get_temperature_status()
+        ]
 
-        if self.ammonia > 30:
-            status_values.append("Bahaya")
-        elif self.ammonia > 25:
-            status_values.append("Buruk")
-        elif self.ammonia > 20:
-            status_values.append("Baik")
-        else:
-            status_values.append("Sangat Baik")
-
-        if self.temperature < 18 or self.temperature > 36:
-            status_values.append("Bahaya")
-        elif self.temperature >= 18 and self.temperature <= 23 or self.temperature >= 35 and self.temperature <= 36:
-            status_values.append("Buruk")
-        elif self.temperature >= 24 and self.temperature <= 25 or self.temperature >= 33 and self.temperature <= 34:
-            status_values.append("Baik")
-        else:
-            status_values.append("Sangat Baik")
-
-        if self.humidity < 58 or self.humidity > 72:
-            status_values.append("Bahaya")
-        elif self.humidity >= 58 and self.humidity <= 59 or self.humidity >= 71 and self.humidity <= 72:
-            status_values.append("Buruk")
-        elif self.humidity >= 60 and self.humidity <= 61 or self.humidity >= 69 and self.humidity <= 70:
-            status_values.append("Baik")
-        else:
-            status_values.append("Sangat Baik")
-
-        if "Bahaya" in status_values:
+        if "Bahaya" in status_values: #Jika salah satu status bahaya langsung kembalikan bahaya
             return "Bahaya"
 
-        score = self.calculate_score()
+        score = self.calculate_score() #lakukan kalkulasi score jika tidak ada status bahaya dari status_values
         if score >= 90:
             return "Sangat Baik"
         elif score >= 70:
@@ -154,6 +125,40 @@ class Parameter(models.Model):
             return "Buruk"
         else:
             return "Bahaya"
+
+    def get_ammonia_status(self):
+            if self.ammonia > 30:
+                return "Bahaya"
+            elif self.ammonia > 25:
+                return "Buruk"
+            elif self.ammonia > 20:
+                return "Baik"
+            else:
+                return "Sangat Baik"
+
+    def get_temperature_status(self):
+            if self.temperature < 18 or self.temperature > 36:
+                return "Bahaya"
+            elif self.temperature >= 18 and self.temperature <= 23 or self.temperature >= 35 and self.temperature <= 36:
+                return "Buruk"
+            elif self.temperature >= 24 and self.temperature <= 25 or self.temperature >= 33 and self.temperature <= 34:
+                return "Baik"
+            else:
+                return "Sangat Baik"
+
+    def get_humidity_status(self):
+            if self.humidity < 58 or self.humidity > 72:
+                return "Bahaya"
+            elif self.humidity >= 58 and self.humidity <= 59 or self.humidity >= 71 and self.humidity <= 72:
+                return "Buruk"
+            elif self.humidity >= 60 and self.humidity <= 61 or self.humidity >= 69 and self.humidity <= 70:
+                return "Baik"
+            else:
+                return "Sangat Baik"
+
+
+
+
 
     def save(self, *args, **kwargs):
         self.score = self.calculate_score()
@@ -199,6 +204,7 @@ class Parameter(models.Model):
             return "text-blue-500"
         else:
             return "text-green-500"
+        
         
     def __str__(self):
         return f"Stempel Waktu {self.timestamp} - Skor : {self.calculate_score()} - Status : {self.calculate_status()}"
