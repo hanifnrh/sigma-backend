@@ -64,9 +64,9 @@ class Parameter(models.Model):
                 "bad": [[18, 23], [35, 36]],
             },
             "humidity": {
-                "veryGood": [62, 68],
-                "good": [[60, 61], [69, 70]],
-                "bad": [[58, 59], [71, 72]],
+                "veryGood": [60, 70],
+                "good": [[50, 59], [71, 80]],
+                "bad": [[0, 49], [81, 100]],
             },
         }
 
@@ -147,13 +147,13 @@ class Parameter(models.Model):
                 return "Sangat Baik"
 
     def get_humidity_status(self):
-            if self.humidity < 58 or self.humidity > 72:
+            if self.humidity < 45 or self.humidity > 85:
                 return "Bahaya"
-            elif self.humidity >= 58 and self.humidity <= 59 or self.humidity >= 71 and self.humidity <= 72:
+            elif self.humidity >= 45 and self.humidity <= 49 or self.humidity >= 81 and self.humidity <= 85:
                 return "Buruk"
-            elif self.humidity >= 60 and self.humidity <= 61 or self.humidity >= 69 and self.humidity <= 70:
+            elif self.humidity >= 50 and self.humidity < 59 or self.humidity > 70 and self.humidity <= 80 :
                 return "Baik"
-            else:
+            elif self.humidity >= 60 and self.humidity <= 70:
                 return "Sangat Baik"
 
 
@@ -186,7 +186,7 @@ class Parameter(models.Model):
             return "text-green-500"
 
     def get_temperature_color(self):
-        if self.temperature < 18 or self.temperature > 36:
+        if self.humidity < 45 or self.humidity > 85:
             return "text-red-500"
         elif self.temperature >= 18 and self.temperature <= 23 or self.temperature >= 35 and self.temperature <= 36:
             return "text-yellow-500"
@@ -196,13 +196,13 @@ class Parameter(models.Model):
             return "text-green-500"
 
     def get_humidity_color(self):
-        if self.humidity < 58 or self.humidity > 72:
+        if self.humidity < 45  or self.humidity > 85:
             return "text-red-500"
-        elif self.humidity >= 58 and self.humidity <= 59 or self.humidity >= 71 and self.humidity <= 72:
+        elif self.humidity >= 45 and self.humidity <= 49 or self.humidity >= 81 and self.humidity <= 85:
             return "text-yellow-500"
-        elif self.humidity >= 60 and self.humidity <= 61 or self.humidity >= 69 and self.humidity <= 70:
+        elif self.humidity >= 50 and self.humidity < 59 or self.humidity > 70 and self.humidity <= 80 :
             return "text-blue-500"
-        else:
+        elif self.humidity >= 60 and self.humidity <= 70:
             return "text-green-500"
         
         
