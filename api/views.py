@@ -314,43 +314,6 @@ class DataAyamHistoryDetail(generics.ListAPIView):
 
 
 
-# class CommandView(APIView):
-#     #API untuk mengirim perinah
-#     permission_classes = [IsAuthenticated]
-    
-#     def get(self, request):
-#         #method untuk esp32 meminta perintah
-#         #Hanya entitas pengguna dengan role "alat" yang bisa menggunakan API view ini
-#         if request.user.role.lower() != 'alat':
-#             return Response({"error": "Akses tidak diizinkan kecuali untuk alat"})
-#         else:
-#             command = cache.get(f"esp32_command_{request.user.id}", None)
-#             return Response({"command": command})
-
-#     def post(self, request):
-#         #Only authorized commands to esp32
-
-#         if request.user.role.lower() not in ["pemilik", "staf"]:
-#             return Response({"error": "Hanya pemilik atau staff yang dapat mengirim perintah"})
-        
-#         user_id = request.data.get("user_id")
-#         command = request.data.get("command")
-
-#         #Validate user ID
-
-#         try:
-#             alat = CustomUser.objects.get(id=user_id, role_iexact="alat")
-
-#         except CustomUser.DoesNotExist:
-#             return Response({"error": "alat tidak ditemukan"}, status=404)
-
-#         if command not in ["wake", "sleep"]:
-#             return Response({"error": "Perintah tidak valid, gunakan 'wake' atau 'sleep'"})
-    
-#         #Store command in cache
-#         cache.set(f"esp32_command_{alat.id}", command, timeout=300) #simpan buat 5 menit
-
-#         return Response({"message": f"Perintah '{command}' dikirim ke {alat.username}"})
     
 class AlatCreateUpdateView(generics.CreateAPIView):
     authentication_classes = [AlatAPIKeyAuthentication]
